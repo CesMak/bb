@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<launch>
+  <arg name="multi_robot" default="False" />
+  <arg name="robot_name" default="turtlebot3" />
+  <arg name="arm_controller_type" default="$(optenv TURTLEBOT3_ARM_CONTROLLER_TYPE position)" />
+  <arg name="ground_truth" default="True" />
+  <arg name="use_diff_drive" default="False" />
+
+  <arg name="x_pos" default="0.0"/>
+  <arg name="y_pos" default="0.0"/>
+  <arg name="z_pos" default="0.01"/>
+
+  <!-- use default launch but hardcode with_arm:=true -->
+  <include file="$(find tuda_turtlebot3_gazebo)/launch/turtlebot3.launch">
+    <arg name="multi_robot" default="$(arg multi_robot)" />
+    <arg name="robot_name" value="$(arg robot_name)"/>
+    <arg name="with_arm" value="True"/>
+    <arg name="arm_controller_type" default="$(arg arm_controller_type)" />
+    <arg name="ground_truth" default="$(arg ground_truth)" />
+    <arg name="use_diff_drive" default="$(arg use_diff_drive)" />
+    <arg name="x_pos" value="$(arg x_pos)"/>
+    <arg name="y_pos" value="$(arg y_pos)"/>
+    <arg name="z_pos" value="$(arg z_pos)"/>
+  </include>
+</launch>

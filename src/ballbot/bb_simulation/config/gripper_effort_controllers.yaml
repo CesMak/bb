@@ -1,0 +1,3 @@
+gripper_servo_effort:
+  type: effort_controllers/JointEffortController
+  joint: gripper_servo_joint

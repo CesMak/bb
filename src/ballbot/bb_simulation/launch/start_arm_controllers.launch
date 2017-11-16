@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+  <arg name="arm_controller_type" default="$(optenv TURTLEBOT3_ARM_CONTROLLER_TYPE position)" />
+
+  <!-- Set the gains used by the mimic joint gazebo plugin  -->
+  <param name="gazebo_ros_control/pid_gains/gripper_finger_joint_1/p" value="1.0" />
+  <param name="gazebo_ros_control/pid_gains/gripper_finger_joint_1/i" value="0.0" />
+  <param name="gazebo_ros_control/pid_gains/gripper_finger_joint_1/d" value="0.01" />
+  <param name="gazebo_ros_control/pid_gains/gripper_finger_joint_2/p" value="1.0" />
+  <param name="gazebo_ros_control/pid_gains/gripper_finger_joint_2/i" value="0.0" />
+  <param name="gazebo_ros_control/pid_gains/gripper_finger_joint_2/d" value="0.01" />
+  
+  <!-- load the controllers -->
+  <include file="$(find tuda_turtlebot3_gazebo)/launch/load_arm_$(arg arm_controller_type)_controllers.launch" />
+</launch>

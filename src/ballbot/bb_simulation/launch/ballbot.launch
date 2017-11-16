@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+
+<launch>
+  <arg name="robot_name" default="ballbot" />
+  <arg name="object_name" default="ball" />
+  <arg name="multi_robot" default="False" />
+  <arg name="ground_truth" default="True" />
+  <arg name="use_diff_drive" default="False" />
+
+  <!--  Robots start position:-->
+  <arg name="x_pos" default="0.0"/>
+  <arg name="y_pos" default="0.0"/>
+  <arg name="z_pos" default="0.0"/>
+
+  <!-- start Gazebo -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find tuda_turtlebot3_gazebo)/worlds/empty.world"/>
+    <arg name="paused" value="True"/>
+    <arg name="use_sim_time" value="True"/>
+    <arg name="gui" value="True"/>
+    <arg name="headless" value="False"/>
+    <arg name="debug" value="False"/>
+  </include>
+
+
+<group ns="$(arg robot_name)">
+  <!-- load robot_description -->
+  <include file="$(find tuda_turtlebot3_description)/launch/bb_description.launch">
+    <arg name="robot_name" value="$(arg robot_name)" />
+    <arg name="with_arm" value="false" />
+    <arg name="ground_truth" value="$(arg ground_truth)" />
+    <arg name="use_diff_drive" value="$(arg use_diff_drive)" />
+  </include>
+
+  <!-- robot spawner -->
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="
+  -urdf -model $(arg robot_name) -param robot_description -x $(arg x_pos)
+  -y $(arg y_pos) -z $(arg z_pos)" />
+
+  <!-- load controllers
+  <group ns="joints">
+    <include file="$(find tuda_turtlebot3_gazebo)/launch/start_wheel_controllers.launch" unless="$(arg use_diff_drive)" />
+  </group>-->
+
+</group>
+
+<group ns="$(arg object_name)">
+
+  <include file="$(find tuda_turtlebot3_description)/launch/ball_description.launch">
+    <arg name="object_name" value="$(arg object_name)" />
+  </include>
+
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="
+  -urdf -model $(arg object_name) -param ball_description -x $(arg x_pos)
+  -y $(arg y_pos) -z $(arg z_pos)" />
+</group>
+
+</launch>

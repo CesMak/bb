@@ -1,0 +1,6 @@
+gripper_trajectory_controller:
+  type: "effort_controllers/JointTrajectoryController"
+  joints: ['gripper_servo_joint']
+
+  gains: 
+      gripper_servo_joint: {p: 1.0, d: 0.0, i: 0.0, i_clamp: 1.0}

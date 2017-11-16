@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+
+<launch>
+  <!--  if gazebo is used, the tf data of the RealSense RGBD camera needs to be published extra-->    
+  <node pkg="tf" type="static_transform_publisher" name="realsense_tf_publisher_1" args="-0.001 0.0 0 0 0 0  /camera_link /camera_depth_frame 100" />
+  <node pkg="tf" type="static_transform_publisher" name="realsense_tf_publisher_2" args="0 0 0 -1.57079632679 0 -1.57079632679 /camera_depth_frame /camera_depth_optical_frame  100" />
+  <node pkg="tf" type="static_transform_publisher" name="realsense_tf_publisher_3" args="0 0 0 0 0 0  /camera_link  /camera_rgb_frame 100" />
+  <node pkg="tf" type="static_transform_publisher" name="realsense_tf_publisher_4" args="0 0 0 -1.57079632679 0 -1.57079632679 /camera_rgb_frame /camera_rgb_optical_frame  100" />
+</launch> 

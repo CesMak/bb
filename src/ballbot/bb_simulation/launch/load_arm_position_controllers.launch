@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+  <!-- load joint controller configurations from YAML file to parameter server -->
+  <rosparam file="$(find tuda_turtlebot3_gazebo)/config/arm_position_controllers.yaml" command="load" />
+  <rosparam file="$(find tuda_turtlebot3_gazebo)/config/gripper_position_controllers.yaml" command="load" />
+
+  <!-- load the controllers -->
+  <node name="arm_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
+    args="arm_joint_1_position
+          arm_joint_2_position
+          arm_joint_3_position
+          arm_joint_4_position
+          gripper_servo_position
+          --shutdown-timeout 3" />
+</launch>

@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+
+<launch>
+  <arg name="multi_robot" default="False" />
+  <arg name="robot_name" default="turtlebot3" />
+  <arg name="with_arm" default="$(optenv TURTLEBOT3_WITH_ARM False)" />
+  <arg name="arm_controller_type" default="$(optenv TURTLEBOT3_ARM_CONTROLLER_TYPE position)" />
+  <arg name="ground_truth" default="True" />
+  <arg name="use_diff_drive" default="False" />
+
+  <arg name="x_pos" default="0.0"/>
+  <arg name="y_pos" default="0.0"/>
+  <arg name="z_pos" default="0.01"/>
+
+  <!-- start Gazebo -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="physics" value="ode" />
+    <arg name="world_name" value="$(find tuda_turtlebot3_gazebo)/worlds/empty.world"/>
+    <arg name="paused" value="True"/>
+    <arg name="use_sim_time" value="True"/>
+    <arg name="gui" value="True"/>
+    <arg name="headless" value="False"/>
+    <arg name="debug" value="False"/>
+  </include>
+
+  <!-- special cases for single robot simulation -->
+  <group unless="$(arg multi_robot)">
+    <!-- needed to prevent gazebo plugins adding a namespace to frame_id-->
+    <rosparam param="/$(arg robot_name)/tf_prefix"> "/" </rosparam>
+    <rosparam param="/$(arg robot_name)/sensor/tf_prefix"> "/" </rosparam>
+  </group>
+
+  <group ns="$(arg robot_name)">
+    <!-- load robot_description -->
+    <include file="$(find tuda_turtlebot3_description)/launch/load_tuda_turtlebot3_robot_description.launch">
+      <arg name="robot_name" value="$(arg robot_name)" />
+      <arg name="with_arm" value="$(arg with_arm)" />
+      <arg name="ground_truth" value="$(arg ground_truth)" />
+      <arg name="use_diff_drive" value="$(arg use_diff_drive)" />
+    </include>
+
+    <!-- robot spawner -->
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg robot_name) -param robot_description -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos)" />
+
+    <!-- load controllers -->
+    <group ns="joints">
+      <!-- HACK: Load the URDF into the ROS Parameter Server at gazebo controller namespace due to a bug in controller spawner -->
+      <include file="$(find tuda_turtlebot3_description)/launch/load_tuda_turtlebot3_robot_description.launch">
+        <arg name="robot_name" value="$(arg robot_name)" />
+        <arg name="with_arm" value="$(arg with_arm)" />
+        <arg name="ground_truth" value="$(arg ground_truth)" />
+        <arg name="use_diff_drive" value="$(arg use_diff_drive)" />
+      </include>
+
+      <include file="$(find tuda_turtlebot3_gazebo)/launch/start_joint_state_controller.launch">
+        <arg name="publish_rate" value="1000" if="$(eval arg('arm_controller_type') == 'effort')" />
+        <arg name="publish_rate" value="100" unless="$(eval arg('arm_controller_type') == 'effort')" />
+      </include>
+      <include file="$(find tuda_turtlebot3_gazebo)/launch/start_wheel_controllers.launch" unless="$(arg use_diff_drive)" />
+      <!-- Start the position controllers of the manipulator arm -->
+      <include file="$(find tuda_turtlebot3_gazebo)/launch/start_arm_controllers.launch" if="$(arg with_arm)">
+        <arg name="arm_controller_type" value="$(arg arm_controller_type)" />
+      </include>
+    </group>
+
+    <!-- tf publisher -->
+    <remap from="joint_states" to="joints/joint_states" />
+
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+      <param name="tf_prefix" type="string" value="$(arg robot_name)" if="$(arg multi_robot)" />
+    </node>
+
+    <include file="$(find tuda_turtlebot3_gazebo)/launch/start_realsense_tf_publisher.launch" />
+
+    <!-- transform ground truth pose to tf -->
+    <group unless="$(arg use_diff_drive)" >
+      <group if="$(arg ground_truth)" >
+        <node name="odom_to_tf" pkg="message_to_tf" type="message_to_tf">
+          <param name="odometry_topic" type="string" value="/gazebo/$(arg robot_name)/odom" />
+          <param name="child_frame_id" type="string" value="base_footprint" />
+        </node>
+      </group>
+    </group>
+  </group>
+</launch>

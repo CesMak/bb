@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="$(arg object_name)">
+   <!-- einfach nur der Ball -->
+   <xacro:include filename="$(find tuda_turtlebot3_description)/urdf/ball.urdf.xacro" />
+   <xacro:ball_macro />
+</robot>
+
