@@ -5,7 +5,7 @@
   <arg name="object_name" default="ball" />
   <arg name="multi_robot" default="False" />
   <arg name="ground_truth" default="True" />
-  <arg name="use_diff_drive" default="False" />
+  <arg name="use_diff_drive" default="True" /> <!-- if True diff drive is off! -->
 
   <!--  Robots start position:-->
   <arg name="x_pos" default="0.0"/>
@@ -37,10 +37,10 @@
   -urdf -model $(arg robot_name) -param robot_description -x $(arg x_pos)
   -y $(arg y_pos) -z $(arg z_pos)" />
 
-  <!-- load controllers
+  <!-- load controllers -->
   <group ns="joints">
     <include file="$(find tuda_turtlebot3_gazebo)/launch/start_wheel_controllers.launch" unless="$(arg use_diff_drive)" />
-  </group>-->
+  </group>
 
 </group>
 
