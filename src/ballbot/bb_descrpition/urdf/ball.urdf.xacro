@@ -23,7 +23,7 @@
          <inertial>
             <origin xyz="0.0 0.0 0.0" />
             <mass value="0.4" />
-            <inertia ixx="0.0198384" ixy="0" ixz="0" iyy="0.0198384" iyz="0" izz="0.0198384" />
+            <inertia ixx="0.001825" ixy="0" ixz="0" iyy="0.001825" iyz="0" izz="0.001825" /> <!-- Solid Edge: 0.0198384 -->
          </inertial>
          <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />

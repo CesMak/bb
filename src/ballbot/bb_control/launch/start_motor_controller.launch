@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+        <arg name="robot_name" default="ballbot" />
+
+  <group ns="$(arg robot_name)">
+          <!-- start motor controller -->
+          <node pkg="bb_control" type="bb_control_node" name="bb_control" output="screen">
+	  </node>
+  </group>
+</launch>

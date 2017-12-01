@@ -6,6 +6,6 @@
   
   <!-- load the controllers -->
   <node name="wheel_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
-    args="wheel1_controller wheel2_controller wheel3_controller
+    args="wheel1_position_controller wheel2_position_controller wheel3_position_controller
           --shutdown-timeout 3" />
 </launch>

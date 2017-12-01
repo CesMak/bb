@@ -1,58 +1,77 @@
-<?xml version="1.0"?>
-
+<?xml version="1.0" encoding="UTF-8"?>
 <launch>
-  <arg name="robot_name" default="ballbot" />
-  <arg name="object_name" default="ball" />
-  <arg name="multi_robot" default="False" />
-  <arg name="ground_truth" default="True" />
-  <arg name="use_diff_drive" default="True" /> <!-- if True diff drive is off! -->
+   <arg name="robot_name" default="ballbot" />
+   <arg name="object_name" default="ball" />
+   <arg name="multi_robot" default="False" />
+   <arg name="ground_truth" default="True" />
+   <arg name="use_diff_drive" default="True" />
+   <!-- if True diff drive is off! -->
 
-  <!--  Robots start position:-->
-  <arg name="x_pos" default="0.0"/>
-  <arg name="y_pos" default="0.0"/>
-  <arg name="z_pos" default="0.0"/>
+   <!--  Robots start position:-->
+   <arg name="x_pos" default="0.0" />
+   <arg name="y_pos" default="0.0" />
+   <arg name="z_pos" default="0.0" />
 
-  <!-- start Gazebo -->
-  <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(find tuda_turtlebot3_gazebo)/worlds/empty.world"/>
-    <arg name="paused" value="True"/>
-    <arg name="use_sim_time" value="True"/>
-    <arg name="gui" value="True"/>
-    <arg name="headless" value="False"/>
-    <arg name="debug" value="False"/>
-  </include>
+   <!-- start Gazebo -->
+   <include file="$(find gazebo_ros)/launch/empty_world.launch">
+      <arg name="world_name" value="$(find tuda_turtlebot3_gazebo)/worlds/empty.world" />
+      <arg name="paused" value="True" />
+      <arg name="use_sim_time" value="True" />
+      <arg name="gui" value="True" />
+      <arg name="headless" value="False" />
+      <arg name="debug" value="False" />
+   </include>
 
+   <group ns="$(arg robot_name)">
+      <!-- load robot_description -->
+      <include file="$(find tuda_turtlebot3_description)/launch/bb_description.launch">
+         <arg name="robot_name" value="$(arg robot_name)" />
+         <arg name="ground_truth" value="$(arg ground_truth)" />
+         <arg name="use_diff_drive" value="$(arg use_diff_drive)" />
+      </include>
 
-<group ns="$(arg robot_name)">
-  <!-- load robot_description -->
-  <include file="$(find tuda_turtlebot3_description)/launch/bb_description.launch">
-    <arg name="robot_name" value="$(arg robot_name)" />
-    <arg name="with_arm" value="false" />
-    <arg name="ground_truth" value="$(arg ground_truth)" />
-    <arg name="use_diff_drive" value="$(arg use_diff_drive)" />
-  </include>
+      <!-- robot spawner -->
+      <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="   -urdf -model $(arg robot_name) -param robot_description -x $(arg x_pos)   -y $(arg y_pos) -z $(arg z_pos)" />
 
-  <!-- robot spawner -->
-  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="
-  -urdf -model $(arg robot_name) -param robot_description -x $(arg x_pos)
-  -y $(arg y_pos) -z $(arg z_pos)" />
+      <!-- load controllers -->
+      <group ns="joints">
+         <!-- HACK: Load the URDF into the ROS Parameter Server at gazebo controller namespace due to a bug in controller spawner -->
+         <include file="$(find tuda_turtlebot3_description)/launch/bb_description.launch">
+            <arg name="robot_name" value="$(arg robot_name)" />
+            <arg name="ground_truth" value="$(arg ground_truth)" />
+            <arg name="use_diff_drive" value="$(arg use_diff_drive)" />
+         </include>
 
-  <!-- load controllers -->
-  <group ns="joints">
-    <include file="$(find tuda_turtlebot3_gazebo)/launch/start_wheel_controllers.launch" unless="$(arg use_diff_drive)" />
-  </group>
+         <include file="$(find tuda_turtlebot3_gazebo)/launch/start_wheel_controllers.launch" />
+         <include file="$(find tuda_turtlebot3_gazebo)/launch/start_joint_state_controller.launch">
+           <arg name="publish_rate" value="100"/>
+         </include>
+      </group>
 
-</group>
+      <!-- tf publisher -->
+      <remap from="joint_states" to="joints/joint_states" />
+      <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+         <param name="tf_prefix" type="string" value="$(arg robot_name)" if="$(arg multi_robot)" />
+      </node>
+   </group>
 
-<group ns="$(arg object_name)">
+   <!-- ball : -->
+   <group ns="$(arg object_name)">
+      <include file="$(find tuda_turtlebot3_description)/launch/ball_description.launch">
+         <arg name="object_name" value="$(arg object_name)" />
+      </include>
+      <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="   -urdf -model $(arg object_name) -param ball_description -x $(arg x_pos)   -y $(arg y_pos) -z $(arg z_pos)" />
+   </group>
 
-  <include file="$(find tuda_turtlebot3_description)/launch/ball_description.launch">
-    <arg name="object_name" value="$(arg object_name)" />
-  </include>
+<!-- start our controller:   -->
+ <include file="$(find bb_control)/launch/start_motor_controller.launch" />
 
-  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="
-  -urdf -model $(arg object_name) -param ball_description -x $(arg x_pos)
-  -y $(arg y_pos) -z $(arg z_pos)" />
-</group>
+<!-- start rviz node:
+<node pkg="rviz" type="rviz" name="rviz" args="-d $(find tuda_turtlebot3_description)/rviz/imu_link.rviz"/> -->
 
+   <!-- start rqt: rosrun rqt_gui rqt_gui   if starts to fast just click blue refresh button!
+<node name="ballbot_rqt" pkg="rqt_gui" type="rqt_gui" respawn="false"
+      output="screen" args="-perspective-file $(find tuda_turtlebot3_description)/rviz/bb_rqt.perspective"/>
+-->
 </launch>
+

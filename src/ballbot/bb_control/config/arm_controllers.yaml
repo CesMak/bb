@@ -1,0 +1,23 @@
+arm_trajectory_controller:
+  type: "position_controllers/JointTrajectoryController"
+  joints:
+    - arm_joint_1
+    - arm_joint_2
+    - arm_joint_3
+    - arm_joint_4
+
+  constraints:
+    goal_time: &goal_time_constraint  4.0
+    stopped_velocity_tolerance: 1.0
+    arm_joint_1:
+      goal: &goal_pos_constraint 0.5
+      trajectory: &trajectory_pos_constraint 1.0
+    arm_joint_2:
+      goal: *goal_pos_constraint
+      trajectory: *trajectory_pos_constraint        
+    arm_joint_3:
+      goal: *goal_pos_constraint
+      trajectory: *trajectory_pos_constraint
+    arm_joint_4:
+      goal: *goal_pos_constraint
+      trajectory: *trajectory_pos_constraint
