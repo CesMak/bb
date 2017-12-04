@@ -12,4 +12,8 @@ rosinstall/optional/custom
 *.orig
 *.rej
 
-bb.*
+bb.config
+bb.creator
+bb.creator.user
+bb.files
+bb.includes

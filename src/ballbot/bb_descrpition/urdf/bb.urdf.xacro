@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Meshes:
+realsense_mount.stl
+tuda_turtlebot3_base.stl
+tuda_turtlebot3_base_simple.stl (without upboard, inboards wholes etc.)
+
+ballbot_base.stl
+bb_wheel-->
+<!-- actually ball should not have joint!
+but if I delete that sim does not work!
+-->
+<!-- Ballbot: https://bitbucket.org/osrf/gazebo/issues/2335/how-to-set-the-friction-of-ballbot-the -->
+<!-- table of names sdf->xacro: http://gazebosim.org/tutorials/?tut=ros_urdf-->
+<!-- https://answers.ros.org/question/51956/simple-question-on-setting-bounce-properties-urdf/ -->
+<!--URDF: Joint elements: and their childs etc.:
+http://wiki.ros.org/urdf/XML/joint-->
+
+<robot xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller" xmlns:interface="http://ros.org/wiki/xacro" xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor" xmlns:xacro="http://ros.org/wiki/xacro">
+   <!-- inits colors &PI -->
+   <xacro:include filename="$(find tuda_turtlebot3_description)/urdf/common_properties.xacro" />
+   <xacro:include filename="$(find tuda_turtlebot3_description)/urdf/bb.gazebo.xacro" />
+   <!--  <xacro:include filename="$(find hector_sensors_description)/urdf/realsense_camera.urdf.xacro" />
+  <xacro:include filename="$(find hector_xacro_tools)/urdf/inertia_tensors.urdf.xacro" />-->
+   <xacro:macro name="turtlebot3_macro" params="with_arm">
+      <link name="base_footprint" />
+      <joint name="body_joint" type="fixed">
+         <parent link="base_footprint" />
+         <child link="body_link" />
+         <!-- World KS to Oberbau KS: Messung: 101+140   Michi: ${0.1149+0.08901}-->
+         <origin xyz="0.0 0.0 ${0.101+0.140}" rpy="0.0 0.0 0.0" />
+      </joint>
+
+      <link name="body_link">
+         <visual>
+            <origin xyz="0.0 0.0 0.0" rpy="${M_PI*0.5} 0.0  0.0" />
+            <geometry>
+               <mesh filename="package://tuda_turtlebot3_description/meshes/base/TUD_Ballbot_V1.0MS_ohne_Raeder.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+            <cast_shadows>1</cast_shadows>
+            <transparency>0</transparency>
+            <material name="light_black" />
+         </visual>
+         <inertial>
+            <origin xyz="0.0 0.0 0.0" />
+            <mass value="1.557" />
+            <inertia ixx="1.567" ixy="-0.003" ixz="-0.002" iyy="0.331" iyz="0.010" izz="1.565" /> <!-- km dm^2 -->
+         </inertial>
+
+         <collision>
+            <origin xyz="0 0 ${0.048*2}" rpy="0 0 0" />
+            <geometry>
+              <cylinder length="${0.048*4}" radius="0.078" />  <!-- geht von der mitte des zylinders aus! -->
+            </geometry>
+<!--            <geometry>
+               <mesh filename="package://tuda_turtlebot3_description/meshes/base/TUD_Ballbot_V1.0MS_ohne_Raeder.stl" scale="0.001 0.001 0.001" />
+            </geometry>-->
+         </collision>
+      </link>
+
+      <joint name="wheel1_joint" type="continuous">
+         <parent link="body_link" />
+         <child link="wheel1_link" />
+         <origin xyz="${-0.05956*cos(grad_to_deg*30)} ${-0.05956*sin(grad_to_deg*30)} -0.08901" rpy="${0.9804+M_PI} ${-M_PI*0.125} ${-M_PI*0.5}" />
+         <!--(0.2817-0.3434)-->
+         <axis xyz="0 1 0" />
+         <limit effort="4.1" velocity="5.7" />
+         <!--see: http://support.robotis.com/en/product/actuator/dynamixel_x/xm_series/xm430-w350.htm
+         Effort: 4.1N.m (at 12.0V, 2.3A)  Velocity: 57rpm (at 14.8V) (no load speed) -->
+         <dynamics friction="0.7" damping="0.0" />
+      </joint>
+
+      <link name="wheel1_link">
+         <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+               <mesh filename="package://tuda_turtlebot3_description/meshes/wheels/wheel.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+            <cast_shadows>1</cast_shadows>
+            <transparency>0</transparency>
+            <material name="light_black" />
+         </visual>
+         <inertial>
+            <origin xyz="0.0 0.0 0.0" />
+            <mass value="0.050" />
+            <inertia ixx="0.000023157" ixy="0" ixz="0" iyy="0.000023157" iyz="0" izz="0.000023157" />
+         </inertial>
+         <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+               <mesh filename="package://tuda_turtlebot3_description/meshes/wheels/wheel.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+         </collision>
+      </link>
+
+      <joint name="wheel2_joint" type="continuous">
+         <parent link="body_link" />
+         <child link="wheel2_link" />
+         <origin xyz="0 0.05956 -0.08901" rpy="${2.1474+M_PI} -0.4183 0.5584" />
+         <axis xyz="0 1 0" />
+         <limit effort="4.1" velocity="5.7" />
+         <dynamics friction="0.7" damping="0.0" />
+      </joint>
+
+      <link name="wheel2_link">
+         <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+               <mesh filename="package://tuda_turtlebot3_description/meshes/wheels/wheel.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+            <cast_shadows>1</cast_shadows>
+            <transparency>0</transparency>
+            <material name="light_black" />
+         </visual>
+         <inertial>
+            <origin xyz="0.0 0.0 0.0" />
+            <mass value="0.050" />
+            <inertia ixx="0.000023157" ixy="0" ixz="0" iyy="0.000023157" iyz="0" izz="0.000023157" />
+         </inertial>
+         <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+               <mesh filename="package://tuda_turtlebot3_description/meshes/wheels/wheel.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+         </collision>
+      </link>
+
+      <joint name="wheel3_joint" type="continuous">
+         <parent link="body_link" />
+         <child link="wheel3_link" />
+         <origin xyz="${0.05956*cos(grad_to_deg*30)} ${-0.05956*sin(grad_to_deg*30)} -0.08901" rpy="-2.1612 ${M_PI*0.125} ${M_PI*0.5}" />
+         <axis xyz="0 1 0" />
+         <limit effort="4.1" velocity="5.7" />
+         <dynamics friction="0.7" damping="0.0" />
+         <!-- set damping to 0? -->
+      </joint>
+
+      <link name="wheel3_link">
+         <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+               <mesh filename="package://tuda_turtlebot3_description/meshes/wheels/wheel.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+            <cast_shadows>1</cast_shadows>
+            <transparency>0</transparency>
+            <material name="light_black" />
+         </visual>
+         <inertial>
+            <origin xyz="0.0 0.0 0.0" />
+            <mass value="0.050" />
+            <inertia ixx="0.000023157" ixy="0" ixz="0" iyy="0.000023157" iyz="0" izz="0.000023157" />
+         </inertial>
+         <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+               <mesh filename="package://tuda_turtlebot3_description/meshes/wheels/wheel.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+         </collision>
+      </link>
+
+      <!-- Ballbot Sensors-->
+      <joint name="imu_joint" type="fixed">
+         <parent link="body_link" />
+         <child link="imu_link" />
+         <origin xyz="0 0 0.062" rpy="0.0 0.0 0" />
+      </joint>
+
+      <link name="imu_link">
+         <inertial>
+            <origin xyz="0.0 0.0 0.0" />
+            <mass value="0.001" />
+            <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001" />
+         </inertial>
+      </link>
+
+
+
+   </xacro:macro>
+</robot>
+

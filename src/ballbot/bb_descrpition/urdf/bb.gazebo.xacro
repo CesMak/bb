@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+   <xacro:arg name="laser_visual" default="False" />
+   <xacro:arg name="imu_visual" default="False" />
+   <xacro:arg name="ground_truth" default="False" />
+   <xacro:arg name="use_diff_drive" default="False" />
+
+  <!-- controllers: -->
+   <gazebo>
+     <!--Plugin loads hardware interfaces and controller manager -->
+      <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+         <robotNamespace>/$(arg robot_name)/joints</robotNamespace>
+         <robotParam>/$(arg robot_name)/robot_description</robotParam>
+         <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+         <!--<controlPeriod> </controlPeriod>-->
+      </plugin>
+   </gazebo>
+
+   <!--   The <transmission> element is used to link actuators to joints-->
+   <!--   <xacro:unless value="$(arg use_diff_drive)">-->
+
+      <transmission name="wheel1_joint_transmission">
+         <type>transmission_interface/SimpleTransmission</type>
+         <joint name="wheel1_joint">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+         </joint>
+         <actuator name="wheel1_joint_actuator">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+         </actuator>
+      </transmission>
+
+      <transmission name="wheel2_joint_transmission">
+         <type>transmission_interface/SimpleTransmission</type>
+         <joint name="wheel2_joint">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+         </joint>
+         <actuator name="wheel2_joint_actuator">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+         </actuator>
+      </transmission>
+
+      <transmission name="wheel3_joint_transmission">
+         <type>transmission_interface/SimpleTransmission</type>
+         <joint name="wheel3_joint">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+         </joint>
+         <actuator name="wheel3_joint_actuator">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+         </actuator>
+      </transmission>
+  <!-- </xacro:unless>-->
+
+
+   <!-- links: http://gazebosim.org/tutorials/?tut=ros_urdf-->
+   <!--no multiple physics engines through urdf?!  -->
+   <!--http://answers.gazebosim.org/question/14384/changing-physics-engine-through-urdf/-->
+   <!--https://answers.ros.org/question/51956/simple-question-on-setting-bounce-properties-urdf/-->
+   <gazebo reference="body_link">
+      <!-- shortforms: -->
+      <gravity>1</gravity>
+      <maxVel>0.01</maxVel>
+      <minDepth>0</minDepth>
+      <mu1>0.0</mu1>
+      <mu2>0.0</mu2>
+      <fdir1>0 0 0</fdir1>
+      <kp>1e+13</kp>
+      <kd>1.0</kd>
+      <selfCollide>0</selfCollide>
+      <maxContacts>10</maxContacts>
+      <laserRetro>0</laserRetro>
+      <material>Gazebo/DarkGrey</material>
+      <!-- not available as short form - full sdf: -->
+      <collision>
+         <surface>
+            <friction>
+               <torsional>
+                  <coefficient>1</coefficient>
+                  <patch_radius>0</patch_radius>
+                  <surface_radius>0</surface_radius>
+                  <use_patch_radius>1</use_patch_radius>
+                  <ode>
+                     <slip>0</slip>
+                  </ode>
+               </torsional>
+            </friction>
+            <bounce>
+               <restitution_coefficient>0</restitution_coefficient>
+               <threshold>1e+06</threshold>
+            </bounce>
+            <contact>
+               <collide_without_contact>0</collide_without_contact>
+               <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
+               <collide_bitmask>1</collide_bitmask>
+               <ode>
+                  <soft_cfm>0</soft_cfm>
+                  <soft_erp>0.2</soft_erp>
+                  <kp>1e+13</kp>
+                  <kd>1</kd>
+                  <max_vel>0.01</max_vel>
+                  <min_depth>0</min_depth>
+               </ode>
+            </contact>
+         </surface>
+      </collision>
+   </gazebo>
+
+   <gazebo reference="wheel1_link">
+      <gravity>1</gravity>
+      <maxVel>0.01</maxVel>
+      <minDepth>0</minDepth>
+      <mu1>0.2</mu1>
+      <mu2>0.0</mu2>
+      <fdir1>0 0 0</fdir1>
+      <kp>1e+13</kp>
+      <kd>1.0</kd>
+      <selfCollide>0</selfCollide>
+      <maxContacts>10</maxContacts>
+      <laserRetro>0</laserRetro>
+      <material>Gazebo/Orange</material>
+      <collision>
+         <surface>
+            <friction>
+               <torsional>
+                  <coefficient>0</coefficient>
+                  <patch_radius>0</patch_radius>
+                  <surface_radius>0</surface_radius>
+                  <use_patch_radius>0</use_patch_radius>
+                  <ode>
+                     <slip>0</slip>
+                  </ode>
+               </torsional>
+            </friction>
+            <bounce>
+               <restitution_coefficient>0</restitution_coefficient>
+               <threshold>1e+06</threshold>
+            </bounce>
+            <contact>
+               <collide_without_contact>0</collide_without_contact>
+               <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
+               <collide_bitmask>1</collide_bitmask>
+               <ode>
+                  <soft_cfm>0</soft_cfm>
+                  <soft_erp>0.2</soft_erp>
+                  <kp>1e+13</kp>
+                  <kd>1</kd>
+                  <max_vel>0.01</max_vel>
+                  <min_depth>0</min_depth>
+               </ode>
+               <bullet>
+                 <split_impulse>1</split_impulse>
+                 <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+                 <soft_cfm>0</soft_cfm>
+                 <soft_erp>0.2</soft_erp>
+                 <kp>1e+13</kp>
+                 <kd>1</kd>
+               </bullet>
+            </contact>
+         </surface>
+      </collision>
+   </gazebo>
+
+   <gazebo reference="wheel2_link">
+      <gravity>1</gravity>
+      <maxVel>0.01</maxVel>
+      <minDepth>0</minDepth>
+      <mu1>0.2</mu1>
+      <mu2>0.0</mu2>
+      <fdir1>0 0 0</fdir1>
+      <kp>1e+13</kp>
+      <kd>1.0</kd>
+      <selfCollide>0</selfCollide>
+      <maxContacts>10</maxContacts>
+      <laserRetro>0</laserRetro>
+      <material>Gazebo/Orange</material>
+      <collision>
+         <surface>
+            <friction>
+               <torsional>
+                  <coefficient>0</coefficient>
+                  <patch_radius>0</patch_radius>
+                  <surface_radius>0</surface_radius>
+                  <use_patch_radius>0</use_patch_radius>
+                  <ode>
+                     <slip>0</slip>
+                  </ode>
+               </torsional>
+            </friction>
+            <bounce>
+               <restitution_coefficient>0</restitution_coefficient>
+               <threshold>1e+06</threshold>
+            </bounce>
+            <contact>
+               <collide_without_contact>0</collide_without_contact>
+               <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
+               <collide_bitmask>1</collide_bitmask>
+               <ode>
+                  <soft_cfm>0</soft_cfm>
+                  <soft_erp>0.2</soft_erp>
+                  <kp>1e+13</kp>
+                  <kd>1</kd>
+                  <max_vel>0.01</max_vel>
+                  <min_depth>0</min_depth>
+               </ode>
+               <bullet>
+                 <split_impulse>1</split_impulse>
+                 <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+                 <soft_cfm>0</soft_cfm>
+                 <soft_erp>0.2</soft_erp>
+                 <kp>1e+13</kp>
+                 <kd>1</kd>
+               </bullet>
+            </contact>
+         </surface>
+      </collision>
+   </gazebo>
+
+   <gazebo reference="wheel3_link">
+      <gravity>1</gravity>
+      <maxVel>0.01</maxVel>
+      <minDepth>0</minDepth>
+      <mu1>0.2</mu1>
+      <mu2>0.0</mu2>
+      <fdir1>0 0 0</fdir1>
+      <kp>1e+13</kp>
+      <kd>1.0</kd>
+      <selfCollide>0</selfCollide>
+      <maxContacts>10</maxContacts>
+      <laserRetro>0</laserRetro>
+      <material>Gazebo/Orange</material>
+      <collision>
+         <surface>
+            <friction>
+               <torsional>
+                  <coefficient>0</coefficient>
+                  <patch_radius>0</patch_radius>
+                  <surface_radius>0</surface_radius>
+                  <use_patch_radius>0</use_patch_radius>
+                  <ode>
+                     <slip>0</slip>
+                  </ode>
+               </torsional>
+            </friction>
+            <bounce>
+               <restitution_coefficient>0</restitution_coefficient>
+               <threshold>1e+06</threshold>
+            </bounce>
+            <contact>
+               <collide_without_contact>0</collide_without_contact>
+               <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
+               <collide_bitmask>1</collide_bitmask>
+               <ode>
+                  <soft_cfm>0</soft_cfm>
+                  <soft_erp>0.2</soft_erp>
+                  <kp>1e+13</kp>
+                  <kd>1</kd>
+                  <max_vel>0.01</max_vel>
+                  <min_depth>0</min_depth>
+               </ode>
+               <bullet>
+                 <split_impulse>1</split_impulse>
+                 <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
+                 <soft_cfm>0</soft_cfm>
+                 <soft_erp>0.2</soft_erp>
+                 <kp>1e+13</kp>
+                 <kd>1</kd>
+               </bullet>
+            </contact>
+         </surface>
+      </collision>
+   </gazebo>
+
+
+   <!-- sensor links here! -->
+<gazebo reference="imu_link">
+  <sensor type="imu" name="imu">
+    <imu/>
+    <plugin name="imu_plugin" filename="libgazebo_ros_imu_sensor.so">
+      <robotNamespace></robotNamespace>
+      <frameName>imu_link</frameName>
+      <topicName>/$(arg robot_name)/sensor/imu</topicName>
+      <updateRateHZ>200.0</updateRateHZ>
+      <gaussianNoise>0.0001</gaussianNoise>
+      <xyzOffset>0.0 0.0 0.0</xyzOffset>
+      <!--<alwaysOn>True</alwaysOn>-->
+      <rpyOffset>0.0 0.0 ${pi}</rpyOffset>
+    </plugin>
+  </sensor>
+</gazebo>
+
+  <!-- https://answers.ros.org/question/12430/modelling-sensorsimu-in-gazebo/ libgazebo_ros_imu.so-->
+</robot>
+
