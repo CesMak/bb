@@ -26,8 +26,16 @@ add_executable(bb_control_node
     src/bb_control.cpp
     )
 
+add_executable(omniwheel_control_node
+      include/bb_control/bb_control.hpp
+      src/3omniwheel_control.cpp
+      )
+
 ## Specify libraries to link a library or executable target against
 target_link_libraries(bb_control_node
    ${catkin_LIBRARIES}
 )
 
+target_link_libraries(omniwheel_control_node
+   ${catkin_LIBRARIES}
+)

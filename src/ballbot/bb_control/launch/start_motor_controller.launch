@@ -1,10 +1,15 @@
 <?xml version="1.0"?>
 <launch>
         <arg name="robot_name" default="ballbot" />
+        <arg name="use_the_ball" default="True" />
 
   <group ns="$(arg robot_name)">
-          <!-- start motor controller -->
-          <node pkg="bb_control" type="bb_control_node" name="bb_control" output="screen">
-	  </node>
+                    <!-- start ballbot: motor controller -->
+          <group if="$(arg use_the_ball)" >
+          <node pkg="bb_control" type="bb_control_node" name="bb_control" output="screen"></node>
+            </group>
+           <group unless="$(arg use_the_ball)" >
+           <node pkg="bb_control" type="omniwheel_control_node" name="omniwheel_control" output="screen"></node>
+            </group>
   </group>
 </launch>

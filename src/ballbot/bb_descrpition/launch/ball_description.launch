@@ -2,10 +2,10 @@
 
 <launch>
   <!-- these are the arguments you can pass this launch file, for example with_arm:=true -->
-  <arg name="object_name" default="ball" />
+  <arg name="ball_name" default="ball" />
   
   <!-- Load the ball:-->
   <param name="ball_description" command="$(find xacro)/xacro --inorder '$(find tuda_turtlebot3_description)/urdf/ball.xacro'
-  object_name:=$(arg object_name)"/>
+  object_name:=$(arg ball_name)"/>
 
 </launch>
