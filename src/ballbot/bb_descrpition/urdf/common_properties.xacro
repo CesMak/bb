@@ -2,7 +2,7 @@
 
 <robot name="xacro_properties" xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:property name="M_PI" value="3.1415926535897931" />
-  <xacro:property name="grad_to_deg" value="0.01745329251" />
+  <xacro:property name="deg_to_rad" value="0.01745329251" />
 
   <!-- Init colour -->  
   <material name="black">

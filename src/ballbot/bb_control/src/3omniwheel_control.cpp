@@ -73,11 +73,11 @@ void calc_motor_commands()
   // dafür fährt er dann aber nicht mehr so gut in 0, 90°.
 
   // für 180°:
-  real_u_1.data=2;//*cos(deg_to_rad(150-0));
+  real_u_1.data=-1;//*cos(deg_to_rad(150-0));
   real_u_2.data=0;//*cos(deg_to_rad(270-0));
-  real_u_3.data=-2;//*cos(deg_to_rad(30-0));
+  real_u_3.data=1;//*cos(deg_to_rad(30-0));
 
-  ROS_INFO("[bb_control] send motor command: [%f, %f, %f]",real_u_1,real_u_2,real_u_3);
+  //ROS_INFO("[bb_control] send motor command: [%f, %f, %f]",real_u_1,real_u_2,real_u_3);
   joint_commands_1_pub.publish(real_u_1);
   joint_commands_2_pub.publish(real_u_2);
   joint_commands_3_pub.publish(real_u_3);
@@ -95,24 +95,22 @@ int main(int argc, char** argv)
    ros::init(argc, argv, "omniwheel_motor_controller");
    ros::NodeHandle nh;
 
-   ros::Subscriber joints_sub = nh.subscribe("/ballbot/joints/joint_states", 5, jointsCallback);
+  // ros::Subscriber joints_sub = nh.subscribe("/ballbot/joints/joint_states", 5, jointsCallback);
 
    //Publisher:
-   joint_commands_1_pub = nh.advertise<std_msgs::Float64>("/ballbot/joints/wheel1_position_controller/command", 5);
-   joint_commands_2_pub = nh.advertise<std_msgs::Float64>("/ballbot/joints/wheel2_position_controller/command", 5);
-   joint_commands_3_pub = nh.advertise<std_msgs::Float64>("/ballbot/joints/wheel3_position_controller/command", 5);
+   joint_commands_1_pub = nh.advertise<std_msgs::Float64>("/ballbot/joints/wheel1_position_controller/command", 10);
+   joint_commands_2_pub = nh.advertise<std_msgs::Float64>("/ballbot/joints/wheel2_position_controller/command", 10);
+   joint_commands_3_pub = nh.advertise<std_msgs::Float64>("/ballbot/joints/wheel3_position_controller/command", 10);
 
    // joint_cmd_pubs_[joint_name_vector_[i]] = nh_.advertise<std_msgs::Float64>("joints/" + joint_name_vector_[i] + "_position/command", 5);
 
-   ros::Rate loop_rate(10);
+   ros::Rate loop_rate(1);
 
    int count = 0;
    while (ros::ok())
    {
-
      calc_motor_commands();
      ros::spinOnce();
-
      loop_rate.sleep();
      ++count;
    }

@@ -1,16 +1,14 @@
 <?xml version="1.0"?>
 
 <launch>
-  <!-- these are the arguments you can pass this launch file, for example with_arm:=true -->
+  <!-- these are the arguments you can pass this launch file-->
   <arg name="robot_name" default="tuda_turtlebot3" />
-  <arg name="with_arm" default="False" />
   <arg name="ground_truth" default="False" />
   <arg name="use_diff_drive" default="False" />
   
   <!-- Load the URDF into the ROS Parameter Server -->
-  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find tuda_turtlebot3_description)/urdf/bb.xacro'
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find ballbot_description)/urdf/bb.xacro'
     robot_name:=$(arg robot_name)
-    with_arm:=$(arg with_arm)
     ground_truth:=$(arg ground_truth)
     use_diff_drive:=$(arg use_diff_drive)" />
 </launch>

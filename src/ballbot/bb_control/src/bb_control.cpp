@@ -108,7 +108,7 @@ std::vector<double> get_real_motor_torques(double alpha,std::vector<double> beta
 
     std::vector<double> real_motor_torques(3);
     // Formulas see p. 70
-    real_motor_torques.at(0)=0.33333333*( Tz+2.0/(cos(alpha))*(Tx*cos(beta1)-Ty*sin(beta1)) );
+    real_motor_torques.at(0)=0.33333333*(Tz+2.0/(cos(alpha))*(Tx*cos(beta1)-Ty*sin(beta1)) );
     real_motor_torques.at(1)=0.33333333*(Tz+1.0/(cos(alpha)) *(sin(beta2)*(-sqrt(3.0)*Tx+Ty) - cos(beta2)*(Tx+sqrt(3.0)*Ty)) );
     real_motor_torques.at(2)=0.33333333*(Tz+1.0/(cos(alpha)) *(sin(beta3)*(sqrt(3.0)*Tx+Ty) + cos(beta3)*(-Tx+sqrt(3.0)*Ty)) );
     return real_motor_torques;
@@ -144,9 +144,9 @@ void calc_motor_commands()
   std::vector<double> beta={deg_to_rad(0),deg_to_rad(120),deg_to_rad(240)};
 
   std::vector<std::vector<double>> K;
-  std::vector<double>K1= {-0.3162,-22.8608,-0.5359,-6.57326};
-  std::vector<double>K2= {-0.3162,-22.8608,-0.5359,-6.57326};
-  std::vector<double>K3= {-0.3162,-22.8608,-0.5359,-6.57326};
+  std::vector<double>K1= { -0.3162  , 24.8947,   -0.5533,    7.1600 }; //  Kyz
+  std::vector<double>K2= {  -0.3162 ,  24.8947,   -0.5533,    7.1600 }; // Kxz
+  std::vector<double>K3= {-0.3162,22.8608,-0.5359,6.57326};
   K.push_back(K1);
   K.push_back(K2);
   K.push_back(K3);
@@ -177,6 +177,7 @@ void calc_motor_commands()
   real_u_3.data=real_u.at(2);
 
   ROS_INFO("[bb_control] send motor command: [%f, %f, %f]",real_u_1,real_u_2,real_u_3);
+  // note that the wheel torque is limited to ca. 4.1Nm.
   joint_commands_1_pub.publish(real_u_1);
   joint_commands_2_pub.publish(real_u_2);
   joint_commands_3_pub.publish(real_u_3);

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <robot xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller" xmlns:interface="http://ros.org/wiki/xacro" xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor" xmlns:xacro="http://ros.org/wiki/xacro" name="$(arg object_name)">
-   <xacro:include filename="$(find tuda_turtlebot3_description)/urdf/ball.gazebo.xacro" />
+   <xacro:include filename="$(find ballbot_description)/urdf/ball.gazebo.xacro" />
    <xacro:macro name="ball_macro">
       <link name="base_footprint" />
       <joint name="body_joint" type="fixed">
@@ -14,7 +14,7 @@
             <origin xyz="0 0 0.0" rpy="0 0 0" />
             <!-- 0.15?! -->
             <geometry>
-               <mesh filename="package://tuda_turtlebot3_description/meshes/base/Kugel.stl" scale="0.001 0.001 0.001" />
+               <mesh filename="package://ballbot_description/meshes/base/Kugel.stl" scale="0.001 0.001 0.001" />
             </geometry>
             <cast_shadows>1</cast_shadows>
             <transparency>0</transparency>
@@ -28,7 +28,7 @@
          <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-               <mesh filename="package://tuda_turtlebot3_description/meshes/base/Kugel.stl" scale="0.001 0.001 0.001" />
+               <mesh filename="package://ballbot_description/meshes/base/Kugel.stl" scale="0.001 0.001 0.001" />
             </geometry>
          </collision>
       </link>

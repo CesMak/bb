@@ -12,7 +12,7 @@
       <selfCollide>0</selfCollide>
       <maxContacts>10</maxContacts>
       <material>Gazebo/Grey</material>
-      <collision>
+<!--      <collision>
          <surface>
             <friction>
                <torsional>
@@ -51,7 +51,7 @@
                </bullet>
             </contact>
          </surface>
-      </collision>
+      </collision>-->
    </gazebo>
 </robot>
 

@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="$(arg robot_name)">
-   <!-- urdf.xacro's:
-bb.urdf.xacro
-tuda_turtlebot3.urdf.xacro-->
-   <xacro:include filename="$(find tuda_turtlebot3_description)/urdf/bb.urdf.xacro" />
-   <xacro:arg name="with_arm" default="False" />
-   <!-- Oberbau: -->
-   <xacro:turtlebot3_macro with_arm="$(arg with_arm)" />
+   <xacro:include filename="$(find ballbot_description)/urdf/bb.urdf.xacro" />
+
+    <!-- Exectue Macro for Ballbot: -->
+   <xacro:ballbot_macro/>
 </robot>
 

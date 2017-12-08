@@ -5,7 +5,7 @@
   <arg name="ball_name" default="ball" />
   
   <!-- Load the ball:-->
-  <param name="ball_description" command="$(find xacro)/xacro --inorder '$(find tuda_turtlebot3_description)/urdf/ball.xacro'
+  <param name="ball_description" command="$(find xacro)/xacro --inorder '$(find ballbot_description)/urdf/ball.xacro'
   object_name:=$(arg ball_name)"/>
 
 </launch>

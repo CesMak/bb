@@ -4,7 +4,7 @@
   <arg name="publish_rate" default="50" />
 
   <!-- Load joint controller configurations from YAML file to parameter server -->
-  <rosparam file="$(find tuda_turtlebot3_gazebo)/config/joint_state_controller.yaml" command="load" />
+  <rosparam file="$(find ballbot_gazebo)/config/joint_state_controller.yaml" command="load" />
   <param name="joint_state_controller/publish_rate" type="double" value="$(arg publish_rate)" />
   
   <!-- load the controllers -->

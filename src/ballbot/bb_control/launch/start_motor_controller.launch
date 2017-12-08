@@ -5,11 +5,11 @@
 
   <group ns="$(arg robot_name)">
                     <!-- start ballbot: motor controller -->
-          <group if="$(arg use_the_ball)" >
+      <group if="$(arg use_the_ball)" >
           <node pkg="bb_control" type="bb_control_node" name="bb_control" output="screen"></node>
             </group>
-           <group unless="$(arg use_the_ball)" >
+     <group unless="$(arg use_the_ball)" >
            <node pkg="bb_control" type="omniwheel_control_node" name="omniwheel_control" output="screen"></node>
-            </group>
+  </group>
   </group>
 </launch>

@@ -2,7 +2,7 @@
 <launch>
    <arg name="robot_name" default="ballbot" />
    <arg name="ball_name" default="ball" />
-   <arg name="use_the_ball" default="False" />
+   <arg name="use_the_ball" default="True" />
    <arg name="multi_robot" default="False" />
    <arg name="ground_truth" default="True" />
    <arg name="use_diff_drive" default="True" />
@@ -17,7 +17,7 @@
 
    <!-- start Gazebo -->
    <include file="$(find gazebo_ros)/launch/empty_world.launch">
-      <arg name="world_name" value="$(find tuda_turtlebot3_gazebo)/worlds/empty.world" />
+      <arg name="world_name" value="$(find ballbot_gazebo)/worlds/empty.world" />
       <arg name="paused" value="True" />
       <arg name="use_sim_time" value="True" />
       <arg name="gui" value="True" />
@@ -27,7 +27,7 @@
 
    <group ns="$(arg robot_name)">
       <!-- load robot_description -->
-      <include file="$(find tuda_turtlebot3_description)/launch/bb_description.launch">
+      <include file="$(find ballbot_description)/launch/bb_description.launch">
          <arg name="robot_name" value="$(arg robot_name)" />
          <arg name="ground_truth" value="$(arg ground_truth)" />
          <arg name="use_diff_drive" value="$(arg use_diff_drive)" />
@@ -39,16 +39,18 @@
       <!-- load controllers -->
       <group ns="joints">
          <!-- HACK: Load the URDF into the ROS Parameter Server at gazebo controller namespace due to a bug in controller spawner -->
-         <include file="$(find tuda_turtlebot3_description)/launch/bb_description.launch">
+         <include file="$(find ballbot_description)/launch/bb_description.launch">
             <arg name="robot_name" value="$(arg robot_name)" />
             <arg name="ground_truth" value="$(arg ground_truth)" />
             <arg name="use_diff_drive" value="$(arg use_diff_drive)" />
          </include>
 
-         <include file="$(find tuda_turtlebot3_gazebo)/launch/start_wheel_controllers.launch" />
-         <include file="$(find tuda_turtlebot3_gazebo)/launch/start_joint_state_controller.launch">
-           <arg name="publish_rate" value="100"/>
+         <include file="$(find ballbot_gazebo)/launch/start_wheel_controllers.launch" />
+
+         <include file="$(find ballbot_gazebo)/launch/start_joint_state_controller.launch">
+           <arg name="publish_rate" value="200"/>
          </include>
+
       </group>
 
       <!-- tf publisher -->
@@ -58,9 +60,16 @@
       </node>
    </group>
 
+    <!-- transform ground truth pose to tf -> for world transformation -->
+    <node name="odom_to_tf" pkg="message_to_tf" type="message_to_tf">
+      <param name="odometry_topic" type="string" value="/gazebo/$(arg robot_name)/odom" />
+      <param name="child_frame_id" type="string" value="base_footprint" />
+    </node>
+
+
    <!-- ball :-->
    <group ns="$(arg ball_name)" if="$(arg use_the_ball)">
-      <include file="$(find tuda_turtlebot3_description)/launch/ball_description.launch">
+      <include file="$(find ballbot_description)/launch/ball_description.launch">
          <arg name="ball_name" value="$(arg ball_name)" />
       </include>
       <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="   -urdf -model $(arg ball_name) -param ball_description -x $(arg x_pos)   -y $(arg y_pos) -z $(arg z_pos)" />
@@ -71,13 +80,20 @@
   <arg name="use_the_ball" value="$(arg use_the_ball)" />
 </include>
 
+<!-- real sense: tf publisher:
+<include file="$(find ballbot_gazebo)/launch/start_realsense_tf_publisher.launch" />
+-->
 
-<!-- start rviz node:
-<node pkg="rviz" type="rviz" name="rviz" args="-d $(find tuda_turtlebot3_description)/rviz/imu_link.rviz"/> -->
+<!-- start rviz node:  -->
+<node pkg="rviz" type="rviz" name="rviz" args="-d $(find ballbot_description)/rviz/model.rviz"/>
+
+
+<!-- start rqt_multiplot node:
+<node pkg="rqt_multiplot" type="rqt_multiplot" name="rqt_multiplot" args=""/>  -->
 
    <!-- start rqt: rosrun rqt_gui rqt_gui   if starts to fast just click blue refresh button!
 <node name="ballbot_rqt" pkg="rqt_gui" type="rqt_gui" respawn="false"
-      output="screen" args="-perspective-file $(find tuda_turtlebot3_description)/rviz/bb_rqt.perspective"/>
+      output="screen" args="-perspective-file $(find ballbot_description)/rviz/bb_rqt.perspective"/>
 -->
 </launch>
 

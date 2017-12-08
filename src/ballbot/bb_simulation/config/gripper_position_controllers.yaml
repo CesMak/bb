@@ -1,4 +1,0 @@
-gripper_servo_position:
-  type: effort_controllers/JointPositionController
-  joint: gripper_servo_joint
-  pid: {p: 10.0, d: 0.0, i: 0.0, i_clamp: 1.0}

@@ -1,9 +1,0 @@
-arm_trajectory_controller:
-  type: "effort_controllers/JointTrajectoryController"
-  joints: ['arm_joint_1', 'arm_joint_2', 'arm_joint_3', 'arm_joint_4']
-
-  gains: 
-    arm_joint_1: {p: 100.0, d: 0.1, i: 0.0, i_clamp: 1.0}
-    arm_joint_2: {p: 100.0, d: 0.1, i: 0.0, i_clamp: 1.0}
-    arm_joint_3: {p: 100.0, d: 0.1, i: 0.0, i_clamp: 1.0}
-    arm_joint_4: {p: 100.0, d: 0.1, i: 0.0, i_clamp: 1.0}

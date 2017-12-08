@@ -2,7 +2,7 @@
 
 <launch>
   <!-- Load joint controller configurations from YAML file to parameter server -->
-  <rosparam file="$(find tuda_turtlebot3_gazebo)/config/wheel_controllers.yaml" command="load"/>
+  <rosparam file="$(find ballbot_gazebo)/config/wheel_controllers.yaml" command="load"/>
   
   <!-- load the controllers -->
   <node name="wheel_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
