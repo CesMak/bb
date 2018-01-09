@@ -3,10 +3,15 @@
    <arg name="robot_name" default="ballbot" />
    <arg name="ball_name" default="ball" />
    <arg name="use_the_ball" default="True" />
+   <arg name="controller_type" default="2D" /> <!-- 2D, 3D, drive -->
+   <!-- PositionJointInterface, VelocityJointInterface, EffortJointInterface -->
+   <arg name="motors_controller_type" default="VelocityJointInterface" />
+
+   <!-- THESE PARAMETERS ARE NOT USED YET: -->
    <arg name="multi_robot" default="False" />
    <arg name="ground_truth" default="True" />
    <arg name="use_diff_drive" default="True" />
-  <!-- <arg name="verbose" default="-e bullet"/> -->
+   <!-- <arg name="verbose" default="-e bullet"/> -->
 
    <!-- if True diff drive is off! -->
 
@@ -26,11 +31,13 @@
    </include>
 
    <group ns="$(arg robot_name)">
+
       <!-- load robot_description -->
       <include file="$(find ballbot_description)/launch/bb_description.launch">
          <arg name="robot_name" value="$(arg robot_name)" />
          <arg name="ground_truth" value="$(arg ground_truth)" />
          <arg name="use_diff_drive" value="$(arg use_diff_drive)" />
+         <arg name="motors_controller_type" value="$(arg motors_controller_type)" />
       </include>
 
       <!-- robot spawner -->
@@ -38,19 +45,25 @@
 
       <!-- load controllers -->
       <group ns="joints">
-         <!-- HACK: Load the URDF into the ROS Parameter Server at gazebo controller namespace due to a bug in controller spawner -->
+         <!-- HACK: Load the URDF into the ROS Parameter Server at gazebo controller
+         namespace due to a bug in controller spawner
+         TODO - Do I need this hack?-->
          <include file="$(find ballbot_description)/launch/bb_description.launch">
             <arg name="robot_name" value="$(arg robot_name)" />
             <arg name="ground_truth" value="$(arg ground_truth)" />
             <arg name="use_diff_drive" value="$(arg use_diff_drive)" />
+            <arg name="motors_controller_type" value="$(arg motors_controller_type)" />
          </include>
 
-         <include file="$(find ballbot_gazebo)/launch/start_wheel_controllers.launch" />
 
+         <include file="$(find ballbot_gazebo)/launch/start_wheel_controllers.launch">
+             <arg name="motors_controller_type" value="$(arg motors_controller_type)" />
+         </include>
+
+          <!-- -->
          <include file="$(find ballbot_gazebo)/launch/start_joint_state_controller.launch">
-           <arg name="publish_rate" value="200"/>
+           <arg name="publish_rate" value="50"/>
          </include>
-
       </group>
 
       <!-- tf publisher -->
@@ -67,29 +80,36 @@
     </node>
 
 
-   <!-- ball :-->
+   <!-- load ball description: -->
    <group ns="$(arg ball_name)" if="$(arg use_the_ball)">
       <include file="$(find ballbot_description)/launch/ball_description.launch">
          <arg name="ball_name" value="$(arg ball_name)" />
       </include>
       <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="   -urdf -model $(arg ball_name) -param ball_description -x $(arg x_pos)   -y $(arg y_pos) -z $(arg z_pos)" />
+
+      <!-- then in rviz the ball is moving: -->
+      <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+         <param name="tf_prefix" type="string" value="$(arg ball_name)" />
+      </node>
   </group>
 
-<!-- start our controller: for the ballbot: or the omni3wheel controller -->
-<include file="$(find bb_control)/launch/start_motor_controller.launch">
-  <arg name="use_the_ball" value="$(arg use_the_ball)" />
+<!-- start our controller: for the ballbot: or the drive controller -->
+<include file="$(find bb_control)/launch/start_control_node.launch">
+  <arg name="controller_type" value="$(arg controller_type)" />
+  <arg name="motors_controller_type" value="$(arg motors_controller_type)" />
 </include>
+
 
 <!-- real sense: tf publisher:
 <include file="$(find ballbot_gazebo)/launch/start_realsense_tf_publisher.launch" />
 -->
 
-<!-- start rviz node:  -->
+<!-- start rviz node: -->
 <node pkg="rviz" type="rviz" name="rviz" args="-d $(find ballbot_description)/rviz/model.rviz"/>
 
 
 <!-- start rqt_multiplot node:
-<node pkg="rqt_multiplot" type="rqt_multiplot" name="rqt_multiplot" args=""/>  -->
+<node pkg="rqt_multiplot" type="rqt_multiplot" name="rqt_multiplot" args=""/> -->
 
    <!-- start rqt: rosrun rqt_gui rqt_gui   if starts to fast just click blue refresh button!
 <node name="ballbot_rqt" pkg="rqt_gui" type="rqt_gui" respawn="false"

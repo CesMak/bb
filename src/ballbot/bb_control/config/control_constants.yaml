@@ -1,0 +1,17 @@
+control_constants:
+  update_rate: 50.0 # [Hz]   publish motor torques with this frequency.
+
+  # controller_type:        # "2D","3D","drive", this value is set through launch file!
+  # motors_controller_type: # "PositionJointInterface", "VelocityJointInterface", "EffortJointInterface" this value is set through launch file.
+
+  #Control2D Gains:
+  gains_2D_Kxz: [ -0.3162,  24.8947,  -0.5533, 7.1600]
+  gains_2D_Kyz: [ -0.3162,  24.8947,  -0.5533, 7.1600]
+  gains_2D_Kxy: [ 0.0,  2.68,  0.0, 0.0]
+
+  #Geometry constants:
+  alpha: 0.78539816339 #[rad]   45°
+  beta: 2.09439510239 #[rad]  120° = 2pi/3
+
+  #Control3D Gains:
+

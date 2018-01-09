@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 
 <launch>
-  <!-- these are the arguments you can pass this launch file, for example with_arm:=true -->
   <arg name="ball_name" default="ball" />
   
   <!-- Load the ball:-->

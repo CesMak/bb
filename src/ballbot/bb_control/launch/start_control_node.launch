@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<launch>
+  <arg name="robot_name" default="ballbot" />
+  <arg name="controller_type" default="drive" />
+  <arg name="motors_controller_type" default="PositionJointInterface" />
+
+  <group ns="$(arg robot_name)">
+
+    <!-- load config into parameter server -->
+    <rosparam file="$(find bb_control)/config/control_constants.yaml" command="load" />
+    <param name="control_constants/controller_type" type="string" value="$(arg controller_type)" />
+    <param name="control_constants/motors_controller_type" type="string" value="$(arg motors_controller_type)" />
+
+    <!-- start ball tracking node-->
+    <node name="bb_control" pkg="bb_control" type="bb_control_node" output="screen" />
+
+  </group>
+</launch>

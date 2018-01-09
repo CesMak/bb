@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <launch>
-  <!-- Load joint controller configurations from YAML file to parameter server -->
-  <rosparam file="$(find ballbot_gazebo)/config/wheel_controllers.yaml" command="load"/>
-  
-  <!-- load the controllers -->
-  <node name="wheel_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
-    args="wheel1_position_controller wheel2_position_controller wheel3_position_controller
-          --shutdown-timeout 3" />
+  <arg name="motors_controller_type" default="PositionJointInterface" /> <!-- PositionJointInterface, velocity, position -->
+
+  <group if="$(eval arg('motors_controller_type') =='PositionJointInterface')">
+
+    <!-- Load joint controller configurations from YAML file to parameter server -->
+    <rosparam file="$(find ballbot_gazebo)/config/wheel_position_controllers.yaml" command="load"/>
+
+     <!-- load the position controllers -->
+    <node name="wheel_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
+    args="wheel1_position_controller wheel2_position_controller wheel3_position_controller --shutdown-timeout 3" />
+  </group>
+
+  <group if="$(eval arg('motors_controller_type') =='VelocityJointInterface')">
+
+    <!-- Load joint controller configurations from YAML file to parameter server -->
+   <rosparam file="$(find ballbot_gazebo)/config/wheel_velocity_controllers.yaml" command="load"/>
+
+     <!-- load the position controllers -->
+    <node name="wheel_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
+    args="wheel1_velocity_controller wheel2_velocity_controller wheel3_velocity_controller --shutdown-timeout 3" />
+  </group>
+
+  <group if="$(eval arg('motors_controller_type') =='EffortJointInterface')">
+
+    <!-- Load joint controller configurations from YAML file to parameter server -->
+    <rosparam file="$(find ballbot_gazebo)/config/wheel_effort_controllers.yaml" command="load"/>
+
+    <!-- load the position controllers -->
+    <node name="wheel_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
+    args="wheel1_effort_controller wheel2_effort_controller wheel3_effort_controller --shutdown-timeout 3" />
+  </group>
+
 </launch>

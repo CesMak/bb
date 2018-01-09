@@ -146,7 +146,7 @@ void calc_motor_commands()
   std::vector<std::vector<double>> K;
   std::vector<double>K1= { -0.3162  , 24.8947,   -0.5533,    7.1600 }; //  Kyz
   std::vector<double>K2= {  -0.3162 ,  24.8947,   -0.5533,    7.1600 }; // Kxz
-  std::vector<double>K3= {-0.3162,22.8608,-0.5359,6.57326};
+  std::vector<double>K3= {0,2.68,0,0};
   K.push_back(K1);
   K.push_back(K2);
   K.push_back(K3);

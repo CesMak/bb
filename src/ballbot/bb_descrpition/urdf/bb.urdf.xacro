@@ -26,16 +26,20 @@
     <xacro:property name="d_inertia_subwheel" value="0.00000001" />
 
     <!--motor values:-->
+    <!-- calculate max effort with emanual: http://support.robotis.com/en/product/actuator/dynamixel_x/xm_series/xm430-w350.htm -->
+    <!-- dynamixel: XM430-W350-T: see performance graph the effort depends on current, efficiency(E), torque : -->
+    <!-- http://simplemotor.com/calculations/ τ = (I * V * E *60) / (rpm * 2π) -->
    <xacro:property name="XL430_W250_max_effort" value="4.1" /> <!-- sollte: 1.5 -> klappt damit aber nicht. nimm 4.1 -->
    <xacro:property name="XL430_W250_max_velocity" value="5.7" /> <!-- sollte: ${61 * 2*pi/60}  klappt damit aber nicht nimm 5.7-->
 
-    <!-- trägheit des motors: -->
-   <xacro:property name="wheel_joint_damping" value="0.0" /> <!-- sollte: 0.5 -->
-   <xacro:property name="wheel_joint_friction" value="0.7" />  <!-- sollte: 1.0 -->
+    <!-- trägheit des motors: if these values are higher than the torques wheel does not turn, if this value is not small enough gazebo error-->
+   <xacro:property name="wheel_joint_damping" value="0.01" /> <!-- 0.01 sollte: 0.5 -->
+   <xacro:property name="wheel_joint_friction" value="0.05" />  <!-- 0.05 sollte: 1.0 -->
 
    <xacro:macro name="ballbot_macro">
 
       <link name="base_footprint" />
+
       <joint name="body_joint" type="fixed">
          <parent link="base_footprint" />
          <child link="body_link" />

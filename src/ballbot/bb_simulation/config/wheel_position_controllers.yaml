@@ -1,0 +1,28 @@
+# Only one controller can be used!
+# If you want to use a different controller comment and uncomment the old one here.
+# Also change the following files:
+#
+# start_wheel_controllers.launch, bb.urdf.xacro, check bb_control_node.cpp publisher init step.
+# see also: http://wiki.ros.org/ros_control
+# http://wiki.ros.org/robot_mechanism_controllers/JointPositionController
+
+# Position Controllers --------------------------------------> works
+wheel1_position_controller:
+   type: position_controllers/JointPositionController
+   joint: wheel1_joint
+   pid: {p: 100.0, i: 0.01, d: 10.0}
+
+wheel2_position_controller:
+   type: position_controllers/JointPositionController
+   joint: wheel2_joint
+   pid: {p: 100.0, i: 0.01, d: 10.0}
+
+wheel3_position_controller:
+   type: position_controllers/JointPositionController
+   joint: wheel3_joint
+   pid: {p: 100.0, i: 0.01, d: 10.0}
+
+#Notes Markus:
+#types: Position or Velocity Controller
+#pid:  controlled via PID type/effort controller. or JointEffortController, JointPositionController,JointVelocityController
+#p: 100.0, i: 0.01, d: 10.0
