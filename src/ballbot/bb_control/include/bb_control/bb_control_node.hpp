@@ -47,7 +47,7 @@
 #include <std_msgs/Float64.h>
 
 #include <Eigen/Dense>  /* for matrix multiplication */
-#include <math.h>       /* sin */
+#include <math.h>       /* sin, sqrt */
 
 //#include <std_msgs/String.h>
 //#include <std_msgs/Int32.h>
@@ -62,13 +62,14 @@ public:
   void update();
 
   double update_rate_;
+  double update_time_;
 
 protected:
   // helper
   double convertDistanceToAngle(double dis);
   std::vector<double> convertVectorToAngle(std::vector<double> input_vec);
 
-  std::vector<double> calc2DMotorCommands();
+  void calc2DMotorCommands();
 
   std::vector<double> convertToAngleVel(std::vector<double> input_vec);
   double linearVelToAngleVel(double linear_vel);
@@ -96,7 +97,8 @@ protected:
   // parameters from the parameter server
   std::vector<double> gains_2D_Kxz_;
   std::vector<double> gains_2D_Kyz_;
-  std::vector<double> gains_2D_Kxy_;
+  double Kr_;
+  double Tv_;
 
   std::string controller_type_;
   std::string motors_controller_type_;
@@ -113,10 +115,16 @@ protected:
   ros::Publisher joint_commands_2_pub_;
   ros::Publisher joint_commands_3_pub_;
 
-
-
   // action server
 
+
+  //for control:
+  std::vector<double> psi_ball_actual_;
+  std::vector<double> psi_ball_last_;
+
+  std::vector<double> phi_ball_actual_;
+  std::vector<double> phi_ball_last_;
+  std::vector<double> imu_phi_last_;
 };
 
 } // end namespace

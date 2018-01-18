@@ -92,51 +92,88 @@ namespace ballbot
   }
 
   //2D Control calculation:
-  std::vector<double> ControlNode::calc2DMotorCommands()
+  void ControlNode::calc2DMotorCommands()
   {
-    //0. use previous_joint_state_msg_ to calculate ball orientation!
+    // see diagram at ETHZ skript at page 51:
+    // input variables:
+    // update_time_ (time discrete) [sec]
+    // imu orientation  : imu_phi_  [rad]
+    // imu angular vel  : imu_dphi_ [rad/sec]
+    // motor angular vel: previous_joint_state_msg_.velocity [rad/sec]
+    // motor position   : previous_joint_state_msg_.position [rad] TODO Wertebereich auf 0, 2pi beschränken?
+    // output variables:
+    // motor torques    : realT_ [Nm]
 
-    //std::cout<<previous_joint_state_msg_.effort.at(0)<<std::endl;
-    std::cout<<"vel: "<<previous_joint_state_msg_.velocity.at(0)<<std::endl;
+    // 1. Convert dpsi_1,2,3 -> dpsi_x,y,z
+    // 1.A dpsix = dpsi1 / cos (alpha) P.71
+    // 1.B dpsiy = dpsi3 * 2 / (sqrt(3) *cos(alpha))
+    // 1.C dpsiz = dpsi1/sin(alpha)
+    std::vector<double> dpsi_ball(3);
+    dpsi_ball[0]=previous_joint_state_msg_.velocity[0]/cos(alpha_);
+    dpsi_ball[1]=(previous_joint_state_msg_.velocity[2]*2)/( sqrt(3) * cos(alpha_) );
+    dpsi_ball[2]=previous_joint_state_msg_.velocity[0]/sin(alpha_);
 
-    //1. virtual motor torques:
-    //states matrix:
-    Eigen::RowVectorXd x(4);
-    Eigen::RowVectorXd y(4);
-    Eigen::RowVectorXd z(4);
-//    x << imu_phi_[0], imu_dphi_[0], joints_position_[0], joints_velocity_[0];
-//    y << imu_phi_[1], imu_dphi_[1], joints_position_[1], joints_velocity_[1];
-//    z << imu_phi_[2], imu_dphi_[2], joints_position_[2], joints_velocity_[2];
+    // 2. Use dpsi_x,y,z -> psi_x,y,z
+    // psi_k = psi_k-1 + dpsi * sample_time
+    //std::cout<<"update rate:"<<update_time_<<std::endl;
+    //std::cout<<dpsi_ball[0]<<" "<<dpsi_ball[1]<<" "<<dpsi_ball[2]<<std::endl;
+    //std::cout<<psi_ball_last_[0]<<" "<<psi_ball_last_[1]<<" "<<psi_ball_last_[2]<<std::endl;
 
-//    std::cout<<" x-state: "<<x<<std::endl;
-//    std::cout<<" y-state: "<<y<<std::endl;
-//    std::cout<<" z-state: "<<z<<std::endl;
+    psi_ball_actual_[0] =psi_ball_last_[0] + update_time_* dpsi_ball[0];
+    psi_ball_actual_[1] =psi_ball_last_[1] + update_time_* dpsi_ball[1];
+    psi_ball_actual_[2] =psi_ball_last_[2] + update_time_* dpsi_ball[2];
 
+    //std::cout<<psi_ball_actual_[0]<<" "<<psi_ball_actual_[1]<<" "<<psi_ball_actual_[2]<<std::endl;
 
-//    double* ptr1 = &gains_2D_Kxz[0];
-//    Eigen::Map<Eigen::RowVectorXd> Kxz(ptr1, 4);
+    // 3. psi_x,y,z -> dphi_x,y,z P. 8
+    double rK = 0.07;
+    double rW = 0.03;
+    std::vector<double> dphi_ball(3);
+    dphi_ball[0]=(dpsi_ball[0]+imu_dphi_[0])*rW/rK+imu_dphi_[0];
+    dphi_ball[1]=(dpsi_ball[1]+imu_dphi_[1])*rW/rK+imu_dphi_[1];
+    dphi_ball[2]=(dpsi_ball[2]/sin(alpha_))*rW/rK+imu_dphi_[2];
 
-//    double* ptr2 = &gains_2D_Kyz[0];
-//    Eigen::Map<Eigen::RowVectorXd> Kyz(ptr2, 4);
+    // 4. dphi_x,y,z -> phi_x,y,z (integrate it!)
+    phi_ball_actual_[0]=psi_ball_last_[0]+(psi_ball_actual_[0]-psi_ball_last_[0]-imu_phi_last_[0]+imu_phi_[0])*rW/rK+imu_phi_[0]-imu_phi_last_[0];
+    phi_ball_actual_[1]=psi_ball_last_[1]+(psi_ball_actual_[1]-psi_ball_last_[1]-imu_phi_last_[1]+imu_phi_[1])*rW/rK+imu_phi_[1]-imu_phi_last_[1];
+    phi_ball_actual_[2]=phi_ball_last_[2]+(psi_ball_actual_[2]-psi_ball_last_[2])*rW/(rK*sin(alpha_))+imu_phi_[2]-imu_phi_last_[2];
 
-//    double* ptr3 = &gains_2D_Kxy[0];
-//    Eigen::Map<Eigen::RowVectorXd> Kxy(ptr3, 4);
+    // 5. phi_x,y,z -> Tx,Ty,Tz (virtual motor torques) P. Tx = - K [phix, dphix, thetax dthetax]
+    double Tx = -(gains_2D_Kxz_[0]*phi_ball_actual_[0]+
+                  gains_2D_Kxz_[1]*dphi_ball[0]+
+                  gains_2D_Kxz_[2]*imu_phi_[0]+
+                  gains_2D_Kxz_[3]*imu_dphi_[0]);
 
-//    double Tx_=-Kxz.dot(x);
-//    double Ty_=-Kyz.dot(y);
-//    double Tz_=-Kxy.dot(z);
-//    ROS_INFO("[bb_control2D] virtual u=-Kx: [%f, %f, %f]",Tx_,Ty_,Tz_);
+    double Ty = -(gains_2D_Kyz_[0]*phi_ball_actual_[1]+
+                  gains_2D_Kyz_[1]*dphi_ball[1]+
+                  gains_2D_Kyz_[2]*imu_phi_[1]+
+                  gains_2D_Kyz_[3]*imu_dphi_[1]);
 
-//    //2. real motor torques:
-//    // Formulas see p. 70
-//    double T1_=0.33333333*(Tz_+2.0/(cos(alpha))*(Tx_*cos(beta1)-Ty_*sin(beta1)) );
-//    double T2_=0.33333333*(Tz_+1.0/(cos(alpha)) *(sin(beta2)*(-sqrt(3.0)*Tx_+Ty_) - cos(beta2)*(Tx_+sqrt(3.0)*Ty_)) );
-//    double T3_=0.33333333*(Tz_+1.0/(cos(alpha)) *(sin(beta3)*(sqrt(3.0)*Tx_+Ty_) + cos(beta3)*(-Tx_+sqrt(3.0)*Ty_)) );
-//    ROS_INFO("[bb_control2D] real u: [%f, %f, %f]",T1_,T2_,T3_);
+    // Tz PD controller: care:
+    // Tz = - bo (e_k-1) = - 2.66 (e_k-1)
+    double Tz = - Kr_*Tv_/update_time_ * (0 - imu_phi_last_[2]);
 
-    std::vector<double> T_ {0.0, 0.0, 0.0};
+    // 6. Tx,Ty, Tz -> T1, T2, T3 (calculate real motor torques):
+    // TOOD: check divisions! P. 14
+    double T1=0.33333333*(Tz+2.0/(cos(alpha_))*(Tx*cos(beta_)-Ty*sin(beta_)) );
+    double T2=0.33333333*(Tz+1.0/(cos(alpha_)) *(sin(beta_)*(-sqrt(3.0)*Tx+Ty) - cos(beta_)*(Tx+sqrt(3.0)*Ty)) ) ;
+    double T3=0.33333333*(Tz+1.0/(cos(alpha_)) *(sin(beta_)*(sqrt(3.0)*Tx+Ty) + cos(beta_)*(-Tx+sqrt(3.0)*Ty)) ) ;
 
-    return T_;
+    // store old values:
+    psi_ball_last_[0] = psi_ball_actual_[0];
+    psi_ball_last_[1] = psi_ball_actual_[1];
+    psi_ball_last_[2] = psi_ball_actual_[2];
+
+    phi_ball_last_[0] = phi_ball_actual_[0];
+    phi_ball_last_[1] = phi_ball_actual_[1];
+    phi_ball_last_[2] = phi_ball_actual_[2];
+
+    imu_phi_last_[0] = imu_phi_[0];
+    imu_phi_last_[1] = imu_phi_[1];
+    imu_phi_last_[2] = imu_phi_[2];
+
+    realT_ =  {T1, T2, T3};
+    //return T_motor;
   }
 
   //constructor is called only once:
@@ -149,12 +186,15 @@ namespace ballbot
     // get 2D control gains:
     gains_2D_Kxz_=nh.param("control_constants/gains_2D_Kxz",(std::vector<double> ) {1.0,2.0,3.0,4.0});
     gains_2D_Kyz_=nh.param("control_constants/gains_2D_Kyz", (std::vector<double> ) {1.0,2.0,3.0,4.0});
-    gains_2D_Kxy_=nh.param("control_constants/gains_2D_Kxy", (std::vector<double> ) {1.0,2.0,3.0,4.0});
+    Kr_ = nh.param("control_constants/Kr", (double) 5.32);
+    Tv_ = nh.param("control_constants/Tv", (double) 1.0);
 
     alpha_=nh.param("control_constants/alpha",45.0);
-    beta_=nh.param("control_constants/beta1",120.0);
+    beta_=nh.param("control_constants/beta",120.0);
 
-    update_rate_ = nh.param("ballbot/control_constants/update_rate", 10.0);
+    update_rate_ = nh.param("control_constants/update_rate", 10.0);
+
+    update_time_ = 1/update_rate_;
 
     //Subscriber:
     imu_sub_ = nh.subscribe("/ballbot/sensor/imu", 5, &ControlNode::imuCallback,this);
@@ -183,6 +223,13 @@ namespace ballbot
     realT_.push_back(0.0);
     realT_.push_back(0.0);
     realT_.push_back(0.0);
+
+    // for control:
+    psi_ball_actual_ = {0,0,0};
+    psi_ball_last_ = {0,0,0};
+    phi_ball_actual_ = {0,0,0};
+    phi_ball_last_ = {0,0,0};
+    imu_phi_last_ = {0,0,0};
   }
 
   // ROS API Callbacks:
@@ -203,7 +250,7 @@ namespace ballbot
     {
       if(imu_updated_ && joint_state_updated_)
       {
-        realT_=calc2DMotorCommands();
+        calc2DMotorCommands();
         imu_updated_=false;
       }
     }
@@ -220,7 +267,7 @@ namespace ballbot
 
   if(imu_updated_ && joint_state_updated_)
      {
-      realT_=calc2DMotorCommands();
+      calc2DMotorCommands();
       joint_state_updated_=false;
      }
   }
@@ -233,7 +280,7 @@ namespace ballbot
     std_msgs::Float64 realT2;
     std_msgs::Float64 realT3;
 
-    realT1.data=1.0;//realT_.at(0);
+    realT1.data=realT_.at(0);//realT_.at(0);
     realT2.data=realT_.at(1);
     realT3.data=realT_.at(2);
     joint_commands_1_pub_.publish(realT1);

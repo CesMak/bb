@@ -87,10 +87,10 @@
       </include>
       <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="   -urdf -model $(arg ball_name) -param ball_description -x $(arg x_pos)   -y $(arg y_pos) -z $(arg z_pos)" />
 
-      <!-- then in rviz the ball is moving: -->
+      <!-- then in rviz the ball is moving:
       <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
          <param name="tf_prefix" type="string" value="$(arg ball_name)" />
-      </node>
+      </node> -->
   </group>
 
 <!-- start our controller: for the ballbot: or the drive controller -->
