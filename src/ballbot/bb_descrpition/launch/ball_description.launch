@@ -2,9 +2,11 @@
 
 <launch>
   <arg name="ball_name" default="ball" />
+  <arg name="wheel_type_single" default="True" />
   
   <!-- Load the ball:-->
   <param name="ball_description" command="$(find xacro)/xacro --inorder '$(find ballbot_description)/urdf/ball.xacro'
-  object_name:=$(arg ball_name)"/>
-
+  ball_name:=$(arg ball_name)
+  wheel_type_single:=$(arg wheel_type_single)"
+  />
 </launch>

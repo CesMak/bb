@@ -2,10 +2,11 @@
 <launch>
    <arg name="robot_name" default="ballbot" />
    <arg name="ball_name" default="ball" />
-   <arg name="use_the_ball" default="True" />
+   <arg name="use_the_ball" default="True" /> <!-- If wheel_type_single: a ball of 400g and 0.7m diameter is loaded, If wheel_type_double: a ball of 326g and 0.8m diameter is loaded -->
    <arg name="controller_type" default="2D" /> <!-- 2D, 3D, drive -->
    <!-- PositionJointInterface, VelocityJointInterface, EffortJointInterface -->
    <arg name="motors_controller_type" default="VelocityJointInterface" />
+   <arg name="wheel_type_single" default="False" /> <!-- Single(True), Double(False) -->
 
    <!-- THESE PARAMETERS ARE NOT USED YET: -->
    <arg name="multi_robot" default="False" />
@@ -38,10 +39,11 @@
          <arg name="ground_truth" value="$(arg ground_truth)" />
          <arg name="use_diff_drive" value="$(arg use_diff_drive)" />
          <arg name="motors_controller_type" value="$(arg motors_controller_type)" />
+         <arg name="wheel_type_single" value="$(arg wheel_type_single)" />
       </include>
 
       <!-- robot spawner -->
-      <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="   -urdf -model $(arg robot_name) -param robot_description -x $(arg x_pos)   -y $(arg y_pos) -z $(arg z_pos)" />
+      <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg robot_name) -param robot_description -x $(arg x_pos)   -y $(arg y_pos) -z $(arg z_pos)" />
 
       <!-- load controllers -->
       <group ns="joints">
@@ -53,8 +55,8 @@
             <arg name="ground_truth" value="$(arg ground_truth)" />
             <arg name="use_diff_drive" value="$(arg use_diff_drive)" />
             <arg name="motors_controller_type" value="$(arg motors_controller_type)" />
+            <arg name="wheel_type_single" value="$(arg wheel_type_single)" />
          </include>
-
 
          <include file="$(find ballbot_gazebo)/launch/start_wheel_controllers.launch">
              <arg name="motors_controller_type" value="$(arg motors_controller_type)" />
@@ -84,8 +86,9 @@
    <group ns="$(arg ball_name)" if="$(arg use_the_ball)">
       <include file="$(find ballbot_description)/launch/ball_description.launch">
          <arg name="ball_name" value="$(arg ball_name)" />
+         <arg name="wheel_type_single" value="$(arg wheel_type_single)"/>
       </include>
-      <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="   -urdf -model $(arg ball_name) -param ball_description -x $(arg x_pos)   -y $(arg y_pos) -z $(arg z_pos)" />
+   <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg ball_name) -param ball_description -x $(arg x_pos)   -y $(arg y_pos) -z $(arg z_pos)" />
 
       <!-- then in rviz the ball is moving:
       <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
@@ -104,9 +107,9 @@
 <include file="$(find ballbot_gazebo)/launch/start_realsense_tf_publisher.launch" />
 -->
 
-<!-- start rviz node: -->
+<!-- start rviz node:
 <node pkg="rviz" type="rviz" name="rviz" args="-d $(find ballbot_description)/rviz/model.rviz"/>
-
+-->
 
 <!-- start rqt_multiplot node:
 <node pkg="rqt_multiplot" type="rqt_multiplot" name="rqt_multiplot" args=""/> -->

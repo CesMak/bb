@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+   <xacro:arg name="laser_visual" default="False" />
+   <xacro:arg name="imu_visual" default="False" />
+   <xacro:arg name="ground_truth" default="False" />
+   <xacro:arg name="use_diff_drive" default="False" />
+   <xacro:arg name="motors_controller_type" default="EffortJointInterface" />
+
+  <!-- controllers: -->
+   <gazebo>
+     <!--Plugin loads hardware interfaces and controller manager -->
+      <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+         <robotNamespace>/$(arg robot_name)/joints</robotNamespace>
+         <robotParam>/$(arg robot_name)/robot_description</robotParam>
+         <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+         <!--<controlPeriod> </controlPeriod>-->
+      </plugin>
+   </gazebo>
+
+   <!--   The <transmission> element is used to link actuators to joints
+          Without a transmission link there is no tf published!
+    -->
+      <transmission name="wheel1_joint_transmission">
+         <type>transmission_interface/SimpleTransmission</type>
+         <joint name="wheel1_joint">
+            <hardwareInterface>hardware_interface/$(arg motors_controller_type)</hardwareInterface>
+         </joint>
+         <actuator name="wheel1_joint_actuator">
+            <hardwareInterface>hardware_interface/$(arg motors_controller_type)</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+         </actuator>
+      </transmission>
+
+      <transmission name="wheel2_joint_transmission">
+         <type>transmission_interface/SimpleTransmission</type>
+         <joint name="wheel2_joint">
+            <hardwareInterface>hardware_interface/$(arg motors_controller_type)</hardwareInterface>
+         </joint>
+         <actuator name="wheel2_joint_actuator">
+            <hardwareInterface>hardware_interface/$(arg motors_controller_type)</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+         </actuator>
+      </transmission>
+
+      <transmission name="wheel3_joint_transmission">
+         <type>transmission_interface/SimpleTransmission</type>
+         <joint name="wheel3_joint">
+            <hardwareInterface>hardware_interface/$(arg motors_controller_type)</hardwareInterface>
+         </joint>
+         <actuator name="wheel3_joint_actuator">
+            <hardwareInterface>hardware_interface/$(arg motors_controller_type)</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+         </actuator>
+      </transmission>
+
+<!-- subwheels transmission links: required for tf-->
+<xacro:macro name="transmission_subwheel_macro" params="pos orient">
+<transmission name="subwheel${pos}_${orient}_joint_transmission">
+   <type>transmission_interface/SimpleTransmission</type>
+   <joint name="subwheel${pos}_${orient}_joint">
+      <hardwareInterface>hardware_interface/$(arg motors_controller_type)</hardwareInterface>
+   </joint>
+   <actuator name="subwheel${pos}_${orient}_joint_actuator">
+      <hardwareInterface>hardware_interface/$(arg motors_controller_type)</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+   </actuator>
+</transmission>
+</xacro:macro>
+
+<xacro:macro name="transmission_subwheel_pos_macro" params="pos">
+<xacro:transmission_subwheel_macro pos="${pos}" orient="top">
+</xacro:transmission_subwheel_macro>
+<xacro:transmission_subwheel_macro pos="${pos}" orient="left">
+</xacro:transmission_subwheel_macro>
+<xacro:transmission_subwheel_macro pos="${pos}" orient="right">
+</xacro:transmission_subwheel_macro>
+<xacro:transmission_subwheel_macro pos="${pos}" orient="bottom">
+</xacro:transmission_subwheel_macro>
+</xacro:macro>
+
+<!-- subwheels transmission's are not required or? (In case you  are not interested in the tf's of them -->
+<!-- generate subwheel transmission links: -->
+<!--<xacro:transmission_subwheel_pos_macro pos="1">
+</xacro:transmission_subwheel_pos_macro>
+<xacro:transmission_subwheel_pos_macro pos="2">
+</xacro:transmission_subwheel_pos_macro>
+<xacro:transmission_subwheel_pos_macro pos="3">
+</xacro:transmission_subwheel_pos_macro>-->
+
+  <!-- </xacro:unless>-->
+
+  <!-- p3d plugin (3D Position Interface for Ground Truth) -->
+  <xacro:if value="$(arg ground_truth)">
+    <gazebo>
+      <plugin name="ground_truth" filename="libgazebo_ros_p3d.so">
+        <frameName>world</frameName>
+        <bodyName>base_footprint</bodyName>
+        <topicName>/gazebo/$(arg robot_name)/odom</topicName>
+        <updateRate>100.0</updateRate>
+      </plugin>
+    </gazebo>
+  </xacro:if>
+
+
+   <!-- links: http://gazebosim.org/tutorials/?tut=ros_urdf-->
+   <!--no multiple physics engines through urdf?!  -->
+   <!--http://answers.gazebosim.org/question/14384/changing-physics-engine-through-urdf/-->
+   <!--https://answers.ros.org/question/51956/simple-question-on-setting-bounce-properties-urdf/-->
+   <gazebo reference="body_link">
+      <!-- shortforms:-->
+      <gravity>1</gravity>
+      <maxVel>0.01</maxVel>
+      <minDepth>0</minDepth>
+      <mu1>0.0</mu1> <!-- das ist die Reibung am Boden oder?! -->
+      <mu2>0.0</mu2>
+      <fdir1>0 0 0</fdir1>
+      <kp>1e+13</kp>
+      <kd>1.0</kd>
+      <selfCollide>0</selfCollide>
+      <maxContacts>10</maxContacts>
+      <laserRetro>0</laserRetro>
+      <material>Gazebo/DarkGrey</material>
+   </gazebo>
+
+<!--  <gazebo reference="camera_mount_link">
+      <material>Gazebo/DarkGrey</material>
+  </gazebo>-->
+
+<!-- main wheels:
+mu: Friction coefficients μ for the principal contact directions along the contact surface
+kp: Contact stiffness for rigid body contacts
+kd: Contact damping k_d for rigid body contacts
+
+mu of speichen_wheel actually does not matter cause it has no contact point!
+-->
+<xacro:macro name="wheel" params="pos">
+<gazebo reference="wheel${pos}_link">
+<mu1>0</mu1>
+<mu2>0</mu2>
+<kp>500000.0</kp>
+<kd>10.0</kd>
+<minDepth>0.001</minDepth>
+<maxVel>0.1</maxVel>
+<fdir1>1 0 0</fdir1>
+<material>Gazebo/Orange</material>
+</gazebo>
+</xacro:macro>
+
+<!-- generate wheels: -->
+<xacro:wheel pos="1"> </xacro:wheel>
+<xacro:wheel pos="2"> </xacro:wheel>
+<xacro:wheel pos="3"> </xacro:wheel>
+
+<!-- subwheels: -->
+<xacro:macro name="subwheel_params" params="suffix">
+<gazebo reference="subwheel${suffix}_link">
+<mu1>0.5</mu1>
+<mu2>0.5</mu2>
+<kp>500000.0</kp>
+<kd>100.0</kd>
+<minDepth>0.001</minDepth>
+<maxVel>0.1</maxVel>
+<fdir1>1 0 0</fdir1>
+<material>Gazebo/Green</material>
+</gazebo>
+</xacro:macro>
+
+<xacro:macro name="subwheel" params="pos">
+<xacro:subwheel_params suffix="${pos}_top">
+</xacro:subwheel_params>
+<xacro:subwheel_params suffix="${pos}_bottom">
+</xacro:subwheel_params>
+<xacro:subwheel_params suffix="${pos}_left">
+</xacro:subwheel_params>
+<xacro:subwheel_params suffix="${pos}_right">
+</xacro:subwheel_params>
+</xacro:macro>
+
+<!-- generate subwheels
+<xacro:subwheel pos="1"> </xacro:subwheel>
+<xacro:subwheel pos="2"> </xacro:subwheel>
+<xacro:subwheel pos="3"> </xacro:subwheel>
+<xacro:subwheel pos="4"> </xacro:subwheel>
+-->
+
+   <!-- sensor links here! -->
+<gazebo reference="imu_link">
+  <sensor name="imu" type="imu">
+    <imu/>
+    <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+      <robotNamespace/>
+      <frameName>imu_link</frameName>
+      <topicName>/$(arg robot_name)/sensor/imu</topicName>
+      <updateRateHZ>100.0</updateRateHZ>
+      <gaussianNoise>0.001</gaussianNoise>
+      <xyzOffset>0.0 0.0 0.0</xyzOffset>
+      <rpyOffset>0.0 0.0 0.0</rpyOffset>
+    </plugin>
+  </sensor>
+</gazebo>
+
+
+<gazebo reference="base_scan">
+   <material>Gazebo/Yellow</material>
+   <sensor name="lds_lfcd_sensor" type="ray">
+     <pose>0 0 0 0 0 0</pose>
+     <visualize>False</visualize>
+     <update_rate>5</update_rate>
+     <ray>
+       <scan>
+         <horizontal>
+           <samples>360</samples>
+           <resolution>1</resolution>
+           <min_angle>0.0</min_angle>
+           <max_angle>6.28</max_angle>
+         </horizontal>
+       </scan>
+       <range>
+         <min>0.120</min>
+         <max>3.5</max>
+         <resolution>0.015</resolution>
+       </range>
+       <noise>
+         <type>gaussian</type>
+         <mean>0.0</mean>
+         <stddev>0.01</stddev>
+       </noise>
+     </ray>
+     <plugin filename="libgazebo_ros_laser.so" name="gazebo_ros_lds_lfcd_controller">
+       <robotNamespace>/$(arg robot_name)/sensor</robotNamespace>
+       <topicName>scan_raw</topicName>
+       <frameName>base_scan</frameName>
+     </plugin>
+   </sensor>
+ </gazebo>
+
+<!-- real sense stuff in realsense_camera.urdf.xacro -->
+
+  <!-- https://answers.ros.org/question/12430/modelling-sensorsimu-in-gazebo/ libgazebo_ros_imu.so-->
+</robot>
+

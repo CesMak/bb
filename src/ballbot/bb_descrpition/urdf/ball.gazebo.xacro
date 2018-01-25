@@ -11,7 +11,7 @@
       <kd>1.0</kd>
       <selfCollide>0</selfCollide>
       <maxContacts>10</maxContacts>
-      <material>Gazebo/Grey</material>
+      <material>Gazebo/White</material>
 <!--      <collision>
          <surface>
             <friction>

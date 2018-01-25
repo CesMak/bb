@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="$(arg robot_name)">
-   <xacro:include filename="$(find ballbot_description)/urdf/bb.urdf.xacro" />
+<xacro:arg name="wheel_type_single" default="True" />
 
+   <xacro:if value="$(arg wheel_type_single)">
+      <xacro:include filename="$(find ballbot_description)/urdf/bb.urdf.xacro" />
+      <!-- Exectue Macro for Ballbot: -->
+      <xacro:ballbot_macro/>
+   </xacro:if>
+
+  <xacro:unless value="$(arg wheel_type_single)">
+    <xacro:include filename="$(find ballbot_description)/urdf/bb.urdf_double_wheel.xacro" />
     <!-- Exectue Macro for Ballbot: -->
-   <xacro:ballbot_macro/>
+    <xacro:ballbot_double_macro/>
+  </xacro:unless>
 </robot>
 

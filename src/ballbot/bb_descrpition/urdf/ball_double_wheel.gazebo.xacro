@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+   <gazebo reference="ball_link">
+      <gravity>1</gravity>
+      <maxVel>0.01</maxVel>
+      <minDepth>0</minDepth>
+      <mu1>0.5</mu1>
+      <mu2>0.5</mu2>
+      <fdir1>0 0 0</fdir1>
+      <kp>1e+13</kp>
+      <kd>1.0</kd>
+      <selfCollide>0</selfCollide>
+      <maxContacts>10</maxContacts>
+      <material>Gazebo/Yellow</material>
+   </gazebo>
+</robot>
+
