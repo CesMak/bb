@@ -91,6 +91,51 @@ namespace ballbot
     return output_vec;
   }
 
+  std::vector<double> ControlNode::toEulerAngle(double x, double y, double z, double w)
+  {
+    // roll (x-axis rotation)
+    double sinr = +2.0 * (w * x + y * z);
+    double cosr = +1.0 - 2.0 * (x * x + y * y);
+    double roll = atan2(sinr, cosr);
+
+    // pitch (y-axis rotation)
+    double pitch = 0.0;
+    double sinp = +2.0 * (w * y - z * x);
+    if (fabs(sinp) >= 1)
+      pitch = copysign(M_PI / 2, sinp); // use 90 degrees if out of range
+    else
+      pitch = asin(sinp);
+
+    // yaw (z-axis rotation)
+    double siny = +2.0 * (w * z + x * y);
+    double cosy = +1.0 - 2.0 * (y * y + z * z);
+    double yaw = atan2(siny, cosy);
+    return {roll, pitch, yaw};
+  }
+
+  void ControlNode::calc2MotorCommands_withoutOdometry()
+  {
+    double Tx = -(gains_2D_Kxz_[0]*0+
+                  gains_2D_Kxz_[1]*imu_phi_[0]+
+                  gains_2D_Kxz_[2]*0+
+                  gains_2D_Kxz_[3]*imu_dphi_[0]);
+
+    double Ty = -(gains_2D_Kyz_[0]*0+
+                  gains_2D_Kyz_[1]*imu_phi_[1]+
+                  gains_2D_Kyz_[2]*0+
+                  gains_2D_Kyz_[3]*imu_dphi_[1]);
+
+    double Tz = 0.0;
+
+    // 6. Tx,Ty, Tz -> T1, T2, T3 (calculate real motor torques):
+    // TOOD: check divisions! P. 14
+    double T1=0.33333333*(Tz+2.0/(cos(alpha_))*(Tx*cos(beta_)-Ty*sin(beta_)) );
+    double T2=0.33333333*(Tz+1.0/(cos(alpha_)) *(sin(beta_)*(-sqrt(3.0)*Tx+Ty) - cos(beta_)*(Tx+sqrt(3.0)*Ty)) ) ;
+    double T3=0.33333333*(Tz+1.0/(cos(alpha_)) *(sin(beta_)*(sqrt(3.0)*Tx+Ty) + cos(beta_)*(-Tx+sqrt(3.0)*Ty)) ) ;
+
+    realT_ =  {T1, T2, T3};
+  }
+
   //2D Control calculation:
   void ControlNode::calc2DMotorCommands()
   {
@@ -189,8 +234,8 @@ namespace ballbot
     Kr_ = nh.param("control_constants/Kr", (double) 5.32);
     Tv_ = nh.param("control_constants/Tv", (double) 1.0);
 
-    alpha_=nh.param("control_constants/alpha",45.0);
-    beta_=nh.param("control_constants/beta",120.0);
+    alpha_=nh.param("control_constants/alpha", 45.0); // in rad!
+    beta_=nh.param("control_constants/beta", 0.0);
 
     update_rate_ = nh.param("control_constants/update_rate", 10.0);
 
@@ -210,6 +255,12 @@ namespace ballbot
     joint_commands_1_pub_ = nh.advertise<std_msgs::Float64>("/ballbot/joints/wheel1_"+motors_controller_type_+"_controller/command", 5);
     joint_commands_2_pub_ = nh.advertise<std_msgs::Float64>("/ballbot/joints/wheel2_"+motors_controller_type_+"_controller/command", 5);
     joint_commands_3_pub_ = nh.advertise<std_msgs::Float64>("/ballbot/joints/wheel3_"+motors_controller_type_+"_controller/command", 5);
+
+    //Publish rpy angles:
+    rpy_pub_ =  nh.advertise<geometry_msgs::Vector3>("rpy_angles", 5);
+
+    //Publish desired torques:
+    desired_torques_pub_ = nh.advertise<geometry_msgs::Vector3>("desired_torques", 5);
 
     //action server:
 
@@ -236,40 +287,47 @@ namespace ballbot
   void ControlNode::imuCallback(const sensor_msgs::ImuConstPtr& imu_msg)
   {
     previous_imu_msg_ = *imu_msg;
-
-    imu_phi_.at(0)=previous_imu_msg_.orientation.x;
-    imu_phi_.at(1)=previous_imu_msg_.orientation.y;
-    imu_phi_.at(2)=previous_imu_msg_.orientation.z;
+    imu_phi_ = toEulerAngle(previous_imu_msg_.orientation.x, previous_imu_msg_.orientation.y, previous_imu_msg_.orientation.z, previous_imu_msg_.orientation.w);
     imu_dphi_.at(0)=previous_imu_msg_.angular_velocity.x;
     imu_dphi_.at(1)=previous_imu_msg_.angular_velocity.y;
     imu_dphi_.at(2)=previous_imu_msg_.angular_velocity.z;
 
-    imu_updated_=true;
+    calc2MotorCommands_withoutOdometry();
 
-    if(controller_type_=="2D")
-    {
-      if(imu_updated_ && joint_state_updated_)
-      {
-        calc2DMotorCommands();
-        imu_updated_=false;
-      }
-    }
-    else if(controller_type_=="drive")
-    {
-      realT_={0.1,0.0,0.0};
-    }
+    // the found angles are written in a geometry_msgs::Vector3
+    geometry_msgs::Vector3 rpy;
+    rpy.x = imu_phi_.at(0)*180/3.14159265359;
+    rpy.y = imu_phi_.at(1)*180/3.14159265359;
+    rpy.z = imu_phi_.at(2)*180/3.14159265359;
+
+    // this Vector is then published:
+    rpy_pub_.publish(rpy);
+
+//    imu_updated_=true;
+//    if(controller_type_=="2D")
+//    {
+//      if(imu_updated_ && joint_state_updated_)
+//      {
+//        calc2MotorCommands_withoutOdometry();
+//        imu_updated_=false;
+//      }
+//    }
+//    else if(controller_type_=="drive")
+//    {
+//      realT_={0.1,0.0,0.0};
+//    }
   }
 
   void ControlNode::jointsCallback(const sensor_msgs::JointStateConstPtr& joint_state_msg)
   {
-  previous_joint_state_msg_=*joint_state_msg;
-  joint_state_updated_=true;
+//  previous_joint_state_msg_=*joint_state_msg;
+//  joint_state_updated_=true;
 
-  if(imu_updated_ && joint_state_updated_)
-     {
-      calc2DMotorCommands();
-      joint_state_updated_=false;
-     }
+//  if(imu_updated_ && joint_state_updated_)
+//     {
+//      calc2MotorCommands_withoutOdometry();
+//      joint_state_updated_=false;
+//     }
   }
 
   //update (publish messages...)
@@ -280,12 +338,21 @@ namespace ballbot
     std_msgs::Float64 realT2;
     std_msgs::Float64 realT3;
 
-    realT1.data=realT_.at(0);//realT_.at(0);
+    realT1.data=realT_.at(0);
     realT2.data=realT_.at(1);
     realT3.data=realT_.at(2);
+//    realT1.data=0.0;
+//    realT2.data=0.0;
+//    realT3.data=0.0;
     joint_commands_1_pub_.publish(realT1);
     joint_commands_2_pub_.publish(realT2);
     joint_commands_3_pub_.publish(realT3);
+
+    // publish desired Torques:
+    desired_torques_.x =realT_.at(0);
+    desired_torques_.y =realT_.at(1);
+    desired_torques_.z =realT_.at(2);
+    desired_torques_pub_.publish(desired_torques_);
   }
 
 }  // end namespace ballbot

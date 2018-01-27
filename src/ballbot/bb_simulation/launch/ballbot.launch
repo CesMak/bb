@@ -5,8 +5,8 @@
    <arg name="use_the_ball" default="True" /> <!-- If wheel_type_single: a ball of 400g and 0.7m diameter is loaded, If wheel_type_double: a ball of 326g and 0.8m diameter is loaded -->
    <arg name="controller_type" default="2D" /> <!-- 2D, 3D, drive -->
    <!-- PositionJointInterface, VelocityJointInterface, EffortJointInterface -->
-   <arg name="motors_controller_type" default="VelocityJointInterface" />
-   <arg name="wheel_type_single" default="False" /> <!-- Single(True), Double(False) -->
+   <arg name="motors_controller_type" default="EffortJointInterface" />
+   <arg name="wheel_type_single" default="False" /> <!-- Single(True), Double(False), caution the orientation of the two model's is different! this means beta is different -->
 
    <!-- THESE PARAMETERS ARE NOT USED YET: -->
    <arg name="multi_robot" default="False" />
@@ -64,7 +64,7 @@
 
           <!-- -->
          <include file="$(find ballbot_gazebo)/launch/start_joint_state_controller.launch">
-           <arg name="publish_rate" value="50"/>
+           <arg name="publish_rate" value="100"/>
          </include>
       </group>
 
@@ -88,13 +88,14 @@
          <arg name="ball_name" value="$(arg ball_name)" />
          <arg name="wheel_type_single" value="$(arg wheel_type_single)"/>
       </include>
-   <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg ball_name) -param ball_description -x $(arg x_pos)   -y $(arg y_pos) -z $(arg z_pos)" />
+   <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg ball_name) -param robot_description -x $(arg x_pos)   -y $(arg y_pos) -z $(arg z_pos)" />
 
-      <!-- then in rviz the ball is moving:
-      <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+      <!-- then in rviz the ball is moving:-->
+      <node pkg="robot_state_publisher" type="robot_state_publisher" name="ball_state_publisher" output="screen">
          <param name="tf_prefix" type="string" value="$(arg ball_name)" />
-      </node> -->
+      </node>
   </group>
+
 
 <!-- start our controller: for the ballbot: or the drive controller -->
 <include file="$(find bb_control)/launch/start_control_node.launch">
@@ -111,8 +112,9 @@
 <node pkg="rviz" type="rviz" name="rviz" args="-d $(find ballbot_description)/rviz/model.rviz"/>
 -->
 
-<!-- start rqt_multiplot node:
-<node pkg="rqt_multiplot" type="rqt_multiplot" name="rqt_multiplot" args=""/> -->
+<!-- start rqt_multiplot node: -->
+<node pkg="rqt_multiplot" type="rqt_multiplot" name="rqt_multiplot" args=""/>
+
 
    <!-- start rqt: rosrun rqt_gui rqt_gui   if starts to fast just click blue refresh button!
 <node name="ballbot_rqt" pkg="rqt_gui" type="rqt_gui" respawn="false"

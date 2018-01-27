@@ -7,7 +7,7 @@
 
    <!-- inits colors &PI -->
    <xacro:include filename="$(find ballbot_description)/urdf/common_properties.xacro" />
-   <xacro:include filename="$(find ballbot_description)/urdf/bb.gazebo_double_wheel.xacro" />
+   <xacro:include filename="$(find ballbot_description)/urdf/bb_double_wheel.gazebo.xacro" />
 
    <!-- <xacro:include filename="$(find ballbot_description)/urdf/realsense_camera.urdf.xacro" />
    <xacro:include filename="$(find hector_xacro_tools)/urdf/inertia_tensors.urdf.xacro" />-->
@@ -17,12 +17,12 @@
    Effort: 4.1N.m (at 12.0V, 2.3A)  Velocity: 57rpm (at 14.8V) (no load speed)   -->
 
     <!-- speichen wheel parameter: -->
-   <xacro:property name="mass_wheel" value="0.030" /> <!-- rad mit mitnehmer ohne motor und ohne kleine schwarze subwheels -->
+   <xacro:property name="mass_wheel" value="0.062" /> <!-- rad mit mitnehmer ohne motor und ohne kleine schwarze subwheels -->
    <xacro:property name="d_inertia_wheel" value="0.00001" /> <!-- unit is kg m^2 diagonal inertia value for ixx,iyy,izz -->
 
     <!-- subwheels parameters : -->
-    <xacro:property name="mass_subwheel" value="0.006" /> <!-- should be 4g -> but sim fails for that -->
-    <xacro:property name="d_inertia_subwheel" value="0.00000001" />
+    <xacro:property name="mass_subwheel" value="0.006" /> <!--  -->
+    <xacro:property name="d_inertia_subwheel" value="0.00000001" /> <!-- unit is kg m^2 diagonal inertia value for ixx,iyy,izz -->
 
     <!--motor values:-->
     <!-- calculate max effort with emanual: http://support.robotis.com/en/product/actuator/dynamixel_x/xm_series/xm430-w350.htm -->
@@ -42,8 +42,8 @@
       <joint name="body_joint" type="fixed">
          <parent link="base_footprint" />
          <child link="body_link" />
-         <!-- World KS to Oberbau KS: Messung: 101+140   Michi: ${0.1149+0.08901}-->
-         <origin xyz="0.0 0.0 ${0.101+0.140-0.021}" rpy="0.0 0.0 0.0" />
+         <!-- the height point is ballmiddle point to ball_link + diameter/2 -->
+         <origin xyz="0.0 0.0 ${0.216+0.04}" rpy="0.0 0.0 0.0" />
       </joint>
 
       <link name="body_link">
@@ -58,8 +58,8 @@
          </visual>
          <inertial>
             <origin xyz="0.0 0.0 0.0" />
-            <mass value="1.557" />
-            <inertia ixx="1.567" ixy="-0.003" ixz="-0.002" iyy="0.331" iyz="0.010" izz="1.565" /> <!-- km dm^2 -->
+            <mass value="1.625" />
+            <inertia ixx="0.01567" ixy="-0.00003" ixz="-0.00002" iyy="0.00331" iyz="0.00010" izz="0.01565" /> <!-- km m^2 -->
          </inertial>
 
          <collision>
@@ -73,7 +73,7 @@
          </collision>
       </link>
 
-<!-- generate wheels and their joints: -->
+<!-- macro for wheels and their joints: -->
 <xacro:macro name="wheel_link_joint_macro" params="pos *joint_origin">
 <joint name="wheel${pos}_joint" type="continuous">
    <parent link="body_link" />
@@ -122,9 +122,7 @@
 </xacro:wheel_link_joint_macro>
 
 
-<!-- generate subwheels and their joints:
-just their origin differs:
-
+<!-- macro for sub_wheels and their joints: -->
 <xacro:macro name="subwheel_link_joint_macro" params="pos orient *joint_origin_sub">
 <joint name="subwheel${pos}_${orient}_joint" type="continuous">
    <parent link="wheel${pos}_link" />
@@ -140,7 +138,7 @@ just their origin differs:
    <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-         <mesh filename="package://ballbot_description/meshes/wheels/Wheel_FreeWheel_V2.0.stl" scale="0.001 0.001 0.001" />
+         <mesh filename="package://ballbot_description/meshes/wheels/Wheel2_wheel_rightOrient.stl" scale="0.001 0.001 0.001" />
       </geometry>
    </visual>
    <inertial>
@@ -151,31 +149,59 @@ just their origin differs:
    <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-         <mesh filename="package://ballbot_description/meshes/wheels/Wheel_FreeWheel_V2.0.stl" scale="0.001 0.001 0.001" />
+         <mesh filename="package://ballbot_description/meshes/wheels/Wheel2_wheel_rightOrient.stl" scale="0.001 0.001 0.001" />
       </geometry>
    </collision>
 </link>
 </xacro:macro>
 
-
+<!-- subwheel macros -->
 <xacro:macro name="subwheel_generate_macro" params="pos">
-<xacro:subwheel_link_joint_macro pos="${pos}" orient="top">
-   <origin xyz="0.0125 0 -0.0234" rpy="${M_PI} ${0} ${-M_PI/2}" />
+<xacro:subwheel_link_joint_macro pos="${pos}" orient="1_out">
+   <origin xyz="0.01375 0.0 -0.0235" rpy="${0.0} ${-M_PI} ${-M_PI/2}" />
 </xacro:subwheel_link_joint_macro>
 
-<xacro:subwheel_link_joint_macro pos="${pos}" orient="bottom">
-   <origin xyz="0.0125 0 0.0234" rpy="${0} ${0} ${-M_PI/2}" />
+<xacro:subwheel_link_joint_macro pos="${pos}" orient="2_out">
+   <origin xyz="0.01375 0.02235 -0.00726" rpy="${0.0} ${2/5*M_PI} ${-M_PI/2}" />
 </xacro:subwheel_link_joint_macro>
 
-<xacro:subwheel_link_joint_macro pos="${pos}" orient="right">
-   <origin xyz="0.0125 0.0234 0" rpy="${0} ${-M_PI/2} ${-M_PI/2}" />
+<xacro:subwheel_link_joint_macro pos="${pos}" orient="3_out">
+   <origin xyz="0.01375 -0.02235 -0.00726" rpy="${0.0} ${-2/5*M_PI} ${-M_PI/2}" />
 </xacro:subwheel_link_joint_macro>
 
-<xacro:subwheel_link_joint_macro pos="${pos}" orient="left">
-   <origin xyz="0.0125 -0.0234 0" rpy="${0} ${M_PI/2} ${-M_PI/2}" />
+<xacro:subwheel_link_joint_macro pos="${pos}" orient="4_out">
+   <origin xyz="0.01375 0.01381 0.01901" rpy="${0.0} ${4/5*M_PI} ${-M_PI/2}" />
 </xacro:subwheel_link_joint_macro>
+
+<xacro:subwheel_link_joint_macro pos="${pos}" orient="5_out">
+   <origin xyz="0.01375 -0.01381 0.01901" rpy="${0.0} ${-4/5*M_PI} ${-M_PI/2}" />
+</xacro:subwheel_link_joint_macro>
+
+
+<xacro:subwheel_link_joint_macro pos="${pos}" orient="1_in">
+   <origin xyz="0.00125 0.0 0.0235" rpy="${0.0} ${-M_PI} ${-M_PI/2}" />
+</xacro:subwheel_link_joint_macro>
+
+<xacro:subwheel_link_joint_macro pos="${pos}" orient="2_in">
+   <origin xyz="0.00125 -0.02235 0.00726" rpy="${0.0} ${2/5*M_PI} ${-M_PI/2}" />
+</xacro:subwheel_link_joint_macro>
+
+<xacro:subwheel_link_joint_macro pos="${pos}" orient="3_in">
+   <origin xyz="0.00125 0.02235 0.00726" rpy="${0.0} ${-2/5*M_PI} ${-M_PI/2}" />
+</xacro:subwheel_link_joint_macro>
+
+<xacro:subwheel_link_joint_macro pos="${pos}" orient="4_in">
+   <origin xyz="0.00125 0.01381 -0.01901" rpy="${0.0} ${-4/5*M_PI} ${-M_PI/2}" />
+</xacro:subwheel_link_joint_macro>
+
+<xacro:subwheel_link_joint_macro pos="${pos}" orient="5_in">
+   <origin xyz="0.00125 -0.01381 -0.01901" rpy="${0.0} ${+4/5*M_PI} ${-M_PI/2}" />
+</xacro:subwheel_link_joint_macro>
+
+
 </xacro:macro>
 
+<!-- generate subwheel's -->
 <xacro:subwheel_generate_macro pos="1">
 </xacro:subwheel_generate_macro>
 
@@ -184,7 +210,7 @@ just their origin differs:
 
 <xacro:subwheel_generate_macro pos="3">
 </xacro:subwheel_generate_macro>
--->
+
 
       <!-- Ballbot Sensors-->
       <joint name="imu_joint" type="fixed">

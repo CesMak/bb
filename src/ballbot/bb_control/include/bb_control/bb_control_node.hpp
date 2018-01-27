@@ -70,6 +70,8 @@ protected:
   std::vector<double> convertVectorToAngle(std::vector<double> input_vec);
 
   void calc2DMotorCommands();
+  void calc2MotorCommands_withoutOdometry();
+  std::vector<double> toEulerAngle(double x, double y, double z, double w);
 
   std::vector<double> convertToAngleVel(std::vector<double> input_vec);
   double linearVelToAngleVel(double linear_vel);
@@ -89,10 +91,11 @@ protected:
   bool imu_updated_=true;
   sensor_msgs::JointState previous_joint_state_msg_;
   bool joint_state_updated_;
-  std::vector<double> imu_phi_,imu_dphi_;
+  std::vector<double> imu_phi_, imu_dphi_;
   std::vector<double> joints_position_;
   std::vector<double> joints_velocity_;
   std::vector<double> realT_;
+  geometry_msgs::Vector3 desired_torques_;
 
   // parameters from the parameter server
   std::vector<double> gains_2D_Kxz_;
@@ -114,6 +117,9 @@ protected:
   ros::Publisher joint_commands_1_pub_;
   ros::Publisher joint_commands_2_pub_;
   ros::Publisher joint_commands_3_pub_;
+  ros::Publisher rpy_pub_;
+  ros::Publisher desired_torques_pub_;    // calculated torques in NM!
+
 
   // action server
 

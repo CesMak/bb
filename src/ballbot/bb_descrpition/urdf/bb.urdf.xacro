@@ -60,7 +60,7 @@
          <inertial>
             <origin xyz="0.0 0.0 0.0" />
             <mass value="1.557" />
-            <inertia ixx="1.567" ixy="-0.003" ixz="-0.002" iyy="0.331" iyz="0.010" izz="1.565" /> <!-- km dm^2 -->
+            <inertia ixx="0.01567" ixy="-0.00003" ixz="-0.00002" iyy="0.00331" iyz="0.00010" izz="0.01565" /> <!-- km m^2 -->
          </inertial>
 
          <collision>

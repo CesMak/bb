@@ -142,7 +142,7 @@ mu of speichen_wheel actually does not matter cause it has no contact point!
 <minDepth>0.001</minDepth>
 <maxVel>0.1</maxVel>
 <fdir1>1 0 0</fdir1>
-<material>Gazebo/Orange</material>
+<material>Gazebo/Grey</material>
 </gazebo>
 </xacro:macro>
 
@@ -161,27 +161,40 @@ mu of speichen_wheel actually does not matter cause it has no contact point!
 <minDepth>0.001</minDepth>
 <maxVel>0.1</maxVel>
 <fdir1>1 0 0</fdir1>
-<material>Gazebo/Green</material>
+<material>Gazebo/DarkGrey</material>
 </gazebo>
 </xacro:macro>
 
 <xacro:macro name="subwheel" params="pos">
-<xacro:subwheel_params suffix="${pos}_top">
+<xacro:subwheel_params suffix="${pos}_1_out">
 </xacro:subwheel_params>
-<xacro:subwheel_params suffix="${pos}_bottom">
+<xacro:subwheel_params suffix="${pos}_2_out">
 </xacro:subwheel_params>
-<xacro:subwheel_params suffix="${pos}_left">
+<xacro:subwheel_params suffix="${pos}_3_out">
 </xacro:subwheel_params>
-<xacro:subwheel_params suffix="${pos}_right">
+<xacro:subwheel_params suffix="${pos}_4_out">
 </xacro:subwheel_params>
+<xacro:subwheel_params suffix="${pos}_5_out">
+</xacro:subwheel_params>
+
+<xacro:subwheel_params suffix="${pos}_1_in">
+</xacro:subwheel_params>
+<xacro:subwheel_params suffix="${pos}_2_in">
+</xacro:subwheel_params>
+<xacro:subwheel_params suffix="${pos}_3_in">
+</xacro:subwheel_params>
+<xacro:subwheel_params suffix="${pos}_4_in">
+</xacro:subwheel_params>
+<xacro:subwheel_params suffix="${pos}_5_in">
+</xacro:subwheel_params>
+
 </xacro:macro>
 
-<!-- generate subwheels
+<!-- generate subwheels -->
 <xacro:subwheel pos="1"> </xacro:subwheel>
 <xacro:subwheel pos="2"> </xacro:subwheel>
 <xacro:subwheel pos="3"> </xacro:subwheel>
-<xacro:subwheel pos="4"> </xacro:subwheel>
--->
+
 
    <!-- sensor links here! -->
 <gazebo reference="imu_link">

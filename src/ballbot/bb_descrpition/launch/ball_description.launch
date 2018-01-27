@@ -5,7 +5,7 @@
   <arg name="wheel_type_single" default="True" />
   
   <!-- Load the ball:-->
-  <param name="ball_description" command="$(find xacro)/xacro --inorder '$(find ballbot_description)/urdf/ball.xacro'
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find ballbot_description)/urdf/ball.xacro'
   ball_name:=$(arg ball_name)
   wheel_type_single:=$(arg wheel_type_single)"
   />

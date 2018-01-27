@@ -1,18 +1,26 @@
 control_constants:
-  update_rate: 50.0 # [Hz]   publish motor torques with this frequency.
+  update_rate: 100.0 # [Hz]   publish motor torques with this frequency.
 
   # controller_type:        # "2D","3D","drive", this value is set through launch file!
   # motors_controller_type: # "PositionJointInterface", "VelocityJointInterface", "EffortJointInterface" this value is set through launch file.
 
   #Control2D Gains:
-  gains_2D_Kxz: [ -0.3162,  24.8947,  -0.5533, 7.1600] #[ -0.3162,  24.8947,  -0.5533, 7.1600]
-  gains_2D_Kyz: [ -0.3162,  24.8947,  -0.5533, 7.1600]
+  gains_2D_Kxz: [ 0.0,  -4,  0.0, -1]  #x=[phix thetax dphix dthetax]
+  gains_2D_Kyz: [ 0.0,  -4,  0.0, -1]  #x=[phiy thetay dphiy dthetay]
   Kr: 5.32
   Tv: 1 #[sec]
 
   #Geometry constants:
-  alpha: 0.78539816339 #[rad]   45°
-  beta: -1.57079       #[rad]   90°  120° = 2pi/3 = 2.09439510239 our beta: 60° we have an offset -> P. 13
+  alpha: 0.78539816339 #[rad]   45°   angle of wheel to middle point of ball and senkrechte nach oben dazu
+  beta:  0.0           #[rad]   0°    winkel von der imu_x zu Rad 1. Räder gegen den Uhrzeigersinn numeriert!
 
   #Control3D Gains:
 
+
+#Notes: White Ball Single Wheel Config:
+#alpha: 0.78539816339 #[rad]   45°
+#beta: -1.0471975512  #[rad]   60°
+
+#Notes: Yellow Ball Single Wheel Config:
+#alpha: 0.78539816339 #[rad]   45°
+#beta:  0.0  #[rad]   0°

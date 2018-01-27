@@ -259,7 +259,7 @@ mu of speichen_wheel actually does not matter cause it has no contact point!
       <robotNamespace/>
       <frameName>imu_link</frameName>
       <topicName>/$(arg robot_name)/sensor/imu</topicName>
-      <updateRateHZ>100.0</updateRateHZ>
+      <updateRateHZ>200.0</updateRateHZ>
       <gaussianNoise>0.001</gaussianNoise>
       <xyzOffset>0.0 0.0 0.0</xyzOffset>
       <rpyOffset>0.0 0.0 0.0</rpyOffset>

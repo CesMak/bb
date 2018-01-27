@@ -4,30 +4,30 @@
        xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
        xmlns:xacro="http://ros.org/wiki/xacro" name="$(arg ball_name)">
 
-   <xacro:include filename="$(find ballbot_description)/urdf/ball_double_wheel.gazebo.xacro" />
-   <xacro:macro name="ball_double_macro">
+<xacro:include filename="$(find ballbot_description)/urdf/ball_double_wheel.gazebo.xacro" />
+
+<xacro:macro name="ball_double_macro">
       <link name="base_footprint" />
       <joint name="body_joint" type="fixed">
          <parent link="base_footprint" />
          <child link="ball_link" />
-         <origin xyz="0.0 0.0 0.070" rpy="0.0 0.0 0.0" />
+         <origin xyz="0.0 0.0 0.080" rpy="0.0 0.0 0.0" />
       </joint>
 
       <link name="ball_link">
          <visual>
             <origin xyz="0 0 0.0" rpy="0 0 0" />
-            <!-- 0.15?! -->
             <geometry>
                <mesh filename="package://ballbot_description/meshes/base/Ball_160mm_2.stl" scale="0.001 0.001 0.001" />
             </geometry>
             <cast_shadows>1</cast_shadows>
             <transparency>0</transparency>
-            <material name="light_black" />
+            <material name="yellow"/>
          </visual>
          <inertial>
             <origin xyz="0.0 0.0 0.0" />
             <mass value="0.326" />
-            <inertia ixx="0.00083" ixy="0" ixz="0" iyy="0.00083" iyz="0" izz="0.00083" />
+            <inertia ixx="0.00139093333333" ixy="0" ixz="0" iyy="0.00139093333333" iyz="0" izz="0.00139093333333" />
          </inertial>
          <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
@@ -40,3 +40,6 @@
    </xacro:macro>
 </robot>
 
+<!-- Notes:
+Inertia Calculation: http://hyperphysics.phy-astr.gsu.edu/hbase/isph.html
+-->
