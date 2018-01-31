@@ -4,13 +4,13 @@ Note:
  The real sensor publshes tf data based on internally stored intrinsics. To support this, only the mounting link is
  used in this macro. The corresponding frames can be added by running static_transform_publishers like so in the
  Gazebo startup somewhere:
- 
+
   <node pkg="tf" type="static_transform_publisher" name="realsense_tf_publisher_1" args="-0.001 0.0 0 0 0 0  /camera_link /camera_depth_frame 100" />
   <node pkg="tf" type="static_transform_publisher" name="realsense_tf_publisher_2" args="0 0 0 -1.57079632679 0 -1.57079632679 /camera_depth_frame /camera_depth_optical_frame  100" />
   <node pkg="tf" type="static_transform_publisher" name="realsense_tf_publisher_3" args="0 0 0 0 0 0  /camera_link  /camera_rgb_frame 100" />
   <node pkg="tf" type="static_transform_publisher" name="realsense_tf_publisher_4" args="0 0 0 -1.57079632679 0 -1.57079632679 /camera_rgb_frame /camera_rgb_optical_frame  100" />
 -->
-<robot xmlns:xacro="http://ros.org/wiki/xacro">  
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
     <!--
      The asus_camera_model macro only adds the model, it does not also add
      the openni gazebo plugin. See the 'asus_camera' macro below for that
@@ -21,12 +21,12 @@ Note:
         <parent link="${parent}"/>
         <child link="${name}_link"/>
       </joint>
-      
+
       <link name="${name}_link">
         <inertial>
-          <mass value="0.200" />
+          <mass value="0.000200" />
           <origin xyz="0 0 0" rpy="0 0 0" />
-          <inertia ixx="5.8083e-4" ixy="0" ixz="0" iyy="3.0833e-5" iyz="0" izz="5.9083e-4" />
+          <inertia ixx="5.8083e-9" ixy="0" ixz="0" iyy="3.0833e-9" iyz="0" izz="5.9083e-9" />
         </inertial>
         <visual>
           <origin xyz="0 0.051 0" rpy="0 0 0" />
@@ -36,9 +36,9 @@ Note:
           </geometry>
           <material name="DarkGrey">
             <color rgba="0.3 0.3 0.3 1"/>
-          </material>    
+          </material>
         </visual>
-       <!--        
+       <!--
        <collision>
           <origin xyz="0 0 0" rpy="0 0 0" />
           <geometry>
@@ -105,10 +105,10 @@ Note:
       </joint>
 
       <link name="${name}_rgb_optical_frame"/>-->
-      
+
       <gazebo reference="${name}_link">
         <material>Gazebo/Blue</material>
-      </gazebo> 
+      </gazebo>
     </xacro:macro>
 
     <!--
@@ -121,7 +121,7 @@ Note:
     </xacro:realsense_camera_model>
 
     <gazebo reference="${name}_link">
-      <sensor type="camera" name="${name}_color">
+      <sensor type="camera" name="${name}_rgb">
         <always_on>1</always_on>
         <update_rate>30</update_rate>
         <camera>
@@ -132,7 +132,7 @@ Note:
             <height>1080</height>
           </image>
           <clip>
-            <near>0.1</near>
+            <near>0.001</near>
             <far>100</far>
           </clip>
           <distortion>
@@ -145,10 +145,10 @@ Note:
           </distortion>
         </camera>
         <plugin name="${name}_camera_depth_controller" filename="libgazebo_ros_camera.so">
-          <robotNamespace>$(arg robot_name)/sensor/${name}/color</robotNamespace>
+          <robotNamespace>$(arg robot_name)/sensor/${name}/rgb</robotNamespace>
           <imageTopicName>image_raw</imageTopicName>
           <cameraInfoTopicName>camera_info</cameraInfoTopicName>
-          <frameName>${name}_color_optical_frame</frameName>
+          <frameName>${name}_rgb_optical_frame</frameName>
         </plugin>
       </sensor>
 
@@ -179,4 +179,3 @@ Note:
     </gazebo>
   </xacro:macro>
 </robot>
-  

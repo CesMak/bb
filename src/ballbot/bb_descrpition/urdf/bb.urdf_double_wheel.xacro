@@ -8,8 +8,8 @@
    <xacro:include filename="$(find ballbot_description)/urdf/common_properties.xacro" />
    <xacro:include filename="$(find ballbot_description)/urdf/bb_double_wheel.gazebo.xacro" />
 
-   <!-- <xacro:include filename="$(find ballbot_description)/urdf/realsense_camera.urdf.xacro" />
-   <xacro:include filename="$(find hector_xacro_tools)/urdf/inertia_tensors.urdf.xacro" />-->
+   <xacro:include filename="$(find ballbot_description)/urdf/realsense_camera.urdf.xacro" />
+   <!--<xacro:include filename="$(find hector_xacro_tools)/urdf/inertia_tensors.urdf.xacro" />-->
 
    <!-- some properties:
    see: http://support.robotis.com/en/product/actuator/dynamixel_x/xm_series/xm430-w350.htm
@@ -42,11 +42,12 @@
    <xacro:macro name="ballbot_double_macro">
 
       <link name="base_footprint" />
+
       <joint name="body_joint" type="fixed">
          <parent link="base_footprint" />
          <child link="body_link" />
          <!-- the height point is ballmiddle point to ball_link + diameter/2 -->
-         <origin xyz="0.0 0.0 ${0.215+0.04}" rpy="0.0 0.0 0.0" />
+         <origin xyz="0.0 0.0 ${0.2122+0.04}" rpy="0.0 0.0 0.0" />
       </joint>
 
       <link name="body_link">
@@ -198,6 +199,7 @@
 
 
       <!-- Ballbot Sensors-->
+      <!-- NOTE that the sensors are modeled weightless because the whole body contanins in it's inertias the weights of the sensors (camera, lds) -->
       <joint name="imu_joint" type="fixed">
          <parent link="body_link" />
          <child link="imu_link" />
@@ -207,7 +209,7 @@
       <link name="imu_link">
          <inertial>
             <origin xyz="0.0 0.0 0.0" />
-            <mass value="0.00001" />
+            <mass value="0.001" />
             <inertia ixx="0.00000001" ixy="0.0" ixz="0.0" iyy="0.00000001" iyz="0.0" izz="0.00000001" />
          </inertial>
       </link>
@@ -216,24 +218,41 @@
       <joint name="scan_joint" type="fixed">
          <parent link="body_link" />
          <child link="base_scan" />
-         <origin xyz="0.02076 0 0.1225" rpy="0.0 0.0 0.0" />
+         <origin xyz="0.00894 0.0 0.175" rpy="0.0 0.0 0.0" /> <!-- Messung Michi -->
       </joint>
-      <link name="base_scan">
-         <inertial>
-            <mass value="0.00001" />
-            <!-- TODO origin here! -->
-            <origin xyz="-0.00687 0.0001 0.0038" />
-            <inertia ixx="-1.801e-06" ixy="-0.007e-06" ixz="3.231e-06" iyy="-7.595e-06" iyz="0.004e-06" izz="-5.794e-06" />
-         </inertial>
-      </link>
+
+<link name="base_scan">
+  <visual>
+    <origin xyz="0.0 0.0 -0.01" rpy="0.0 0.0 ${pi}" />
+    <geometry>
+      <mesh filename="package://ballbot_description/meshes/sensors/lds.stl" scale="0.001 0.001 0.001" />
+    </geometry>
+    <material name="dark" />
+  </visual>
+
+  <collision>
+    <origin xyz="0.012 0.0 -0.01" rpy="0.0 0.0 0.0" />
+    <geometry>
+      <cylinder length="0.040" radius="0.05" />
+    </geometry>
+  </collision>
+
+  <inertial>
+    <mass value="0.00001" />
+    <origin xyz="-0.0000687 0.000001 0.000038" />
+    <inertia ixx="-1.801e-09" ixy="-0.007e-09" ixz="3.231e-09"
+             iyy="-7.595e-09" iyz="0.004e-09"
+             izz="-5.794e-09" />
+  </inertial>
+</link>
 
 
-      <!--
 <joint name="realsense_mount_joint" type="fixed">
 <parent link="body_link" />
 <child link="camera_mount_link" />
-<origin xyz="0.17407 -0.04586 0.03995" rpy="0.0 0.0 ${pi}" />
+<origin xyz="0.081 -0.0461 0.15045" rpy="0.0 0.0 ${pi}" />
 </joint>
+
 
 <link name="camera_mount_link">
 <visual>
@@ -245,24 +264,25 @@
 </visual>
 
 <collision>
-<origin xyz="0.00133 -0.046 -0.00326" rpy="0.0 0.0 0.0" />
+<origin xyz="0.00133 -0.056 -0.00326" rpy="0.0 0.0 0.0" />
 <geometry>
-<box size="0.0175 0.134 0.024" />
+<box size="0.0175 0.154 0.024" />
 </geometry>
 </collision>
 
 <inertial>
-<mass value="0.023" />
-<origin xyz="0.00616 -0.04132 -0.00000235" />
-<inertia ixx="40.506e-06" ixy="-0.712e-06" ixz="0.472e-06"
-       iyy="2.546e-06" iyz="-0.601e-06"
-       izz="39.799e-06" />
+<mass value="0.0001" />
+<origin xyz="0.0000616 -0.0004132 -0.0000000235" />
+<inertia ixx="40.506e-09" ixy="-0.712e-09" ixz="0.472e-09"
+       iyy="2.546e-09" iyz="-0.601e-09"
+       izz="39.799e-09" />
 </inertial>
 </link>
 
+<!-- exectutes the macro in realsense_camera.urdf.xacro -->
 <xacro:realsense_camera name="camera" parent="camera_mount_link">
-<origin xyz="0.0 0.005 -0.00337" rpy="0.0 0.0 ${pi}" />
+  <origin xyz="0.0 0.005 -0.00337" rpy="0.0 0.0 ${pi}" />
 </xacro:realsense_camera>
--->
+
    </xacro:macro>
 </robot>

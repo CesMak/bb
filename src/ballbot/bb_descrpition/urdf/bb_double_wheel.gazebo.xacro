@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-   <xacro:arg name="laser_visual" default="False" />
-   <xacro:arg name="imu_visual" default="False" />
-   <xacro:arg name="ground_truth" default="False" />
-   <xacro:arg name="use_diff_drive" default="False" />
    <xacro:arg name="motors_controller_type" default="EffortJointInterface" />
    <xacro:arg name="imu_update_rate" default="100" />
    <xacro:arg name="control_period" default="0.01" />
+
+    <!-- not used yet: -->
+   <xacro:arg name="imu_visual" default="False" />
+   <xacro:arg name="ground_truth" default="False" />
+   <xacro:arg name="use_diff_drive" default="False" />
+   <xacro:arg name="laser_visual" default="False" /> <!-- is this used yet?! -->
 
    <!-- controllers: -->
    <gazebo>
@@ -132,9 +134,9 @@
       <material>Gazebo/DarkGrey</material>
    </gazebo>
 
-   <!--  <gazebo reference="camera_mount_link">
+  <gazebo reference="camera_mount_link">
       <material>Gazebo/DarkGrey</material>
-  </gazebo>-->
+  </gazebo>
 
 <!-- do i need this for ground friction?! -->
 <gazebo reference="base_footprint">
@@ -221,39 +223,39 @@ mu of speichen_wheel actually does not matter cause it has no contact point!
    </gazebo>
 
 
-   <gazebo reference="base_scan">
-      <material>Gazebo/Yellow</material>
-      <sensor name="lds_lfcd_sensor" type="ray">
-         <pose>0 0 0 0 0 0</pose>
-         <visualize>False</visualize>
-         <update_rate>5</update_rate>
-         <ray>
-            <scan>
-               <horizontal>
-                  <samples>360</samples>
-                  <resolution>1</resolution>
-                  <min_angle>0.0</min_angle>
-                  <max_angle>6.28</max_angle>
-               </horizontal>
-            </scan>
-            <range>
-               <min>0.120</min>
-               <max>3.5</max>
-               <resolution>0.015</resolution>
-            </range>
-            <noise>
-               <type>gaussian</type>
-               <mean>0.0</mean>
-               <stddev>0.01</stddev>
-            </noise>
-         </ray>
-         <plugin filename="libgazebo_ros_laser.so" name="gazebo_ros_lds_lfcd_controller">
-            <robotNamespace>/$(arg robot_name)/sensor</robotNamespace>
-            <topicName>scan_raw</topicName>
-            <frameName>base_scan</frameName>
-         </plugin>
-      </sensor>
-   </gazebo>
+<gazebo reference="base_scan">
+  <material>Gazebo/DarkGrey</material>
+  <sensor type="ray" name="lds_lfcd_sensor">
+    <pose>0 0 0 0 0 0</pose>
+    <visualize>$(arg laser_visual)</visualize>
+    <update_rate>5</update_rate>
+    <ray>
+      <scan>
+        <horizontal>
+          <samples>360</samples>
+          <resolution>1</resolution>
+          <min_angle>0.0</min_angle>
+          <max_angle>6.28</max_angle>
+        </horizontal>
+      </scan>
+      <range>
+        <min>0.120</min>
+        <max>3.5</max>
+        <resolution>0.015</resolution>
+      </range>
+      <noise>
+        <type>gaussian</type>
+        <mean>0.0</mean>
+        <stddev>0.01</stddev>
+      </noise>
+    </ray>
+    <plugin name="gazebo_ros_lds_lfcd_controller" filename="libgazebo_ros_laser.so">
+      <robotNamespace>/$(arg robot_name)/sensor</robotNamespace>
+      <topicName>scan_raw</topicName>
+      <frameName>base_scan</frameName>
+    </plugin>
+  </sensor>
+</gazebo>
 
 
    <!-- real sense stuff in realsense_camera.urdf.xacro -->

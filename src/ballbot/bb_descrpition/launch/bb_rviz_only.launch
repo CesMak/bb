@@ -30,16 +30,6 @@
    <arg name="ball_z_pos" default="0.080" /> <!-- at least the 326g. (Yellow real ball) has a diameter of 160mm otherwise it would start in the 0 point!-->
 
 
-   <!-- start Gazebo -->
-   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-      <arg name="world_name" value="$(find ballbot_gazebo)/worlds/empty.world" />
-      <arg name="paused" value="True" />
-      <arg name="use_sim_time" value="True" /> <!-- Tells ROS nodes asking for time to get the Gazebo-published simulation time, published over the ROS topic /clock (default true) -->
-      <arg name="gui" value="True" />
-      <arg name="headless" value="False" />
-      <arg name="debug" value="False" />
-   </include>
-
    <group ns="$(arg robot_name)">
 
       <!-- load robot_description -->
@@ -120,9 +110,9 @@
 <include file="$(find ballbot_gazebo)/launch/start_realsense_tf_publisher.launch" />
 -->
 
-<!-- start rviz node:
-<node pkg="rviz" type="rviz" name="rviz" args="-d $(find ballbot_description)/rviz/model.rviz"/>
--->
+<!-- start rviz node: -->
+<node pkg="rviz" type="rviz" name="rviz" args="-d $(find ballbot_description)/rviz/model_only_rviz.rviz"/>
+
 
 <!-- start rqt_multiplot node:
 <node pkg="rqt_multiplot" type="rqt_multiplot" name="rqt_multiplot" args=""/>
