@@ -4,14 +4,60 @@
       <gravity>1</gravity>
       <maxVel>0.01</maxVel>
       <minDepth>0</minDepth>
-      <mu1>0.5</mu1>
-      <mu2>0.5</mu2>
+      <mu1>1000</mu1>
+      <mu2>1000</mu2>
       <fdir1>0 0 0</fdir1>
-      <kp>1e+13</kp>
-      <kd>1.0</kd>
+      <kp>5e+6</kp>
+      <kd>10.0</kd>
       <selfCollide>0</selfCollide>
       <maxContacts>10</maxContacts>
-      <material>Gazebo/Yellow</material>
+<!--      <visual name="basket_ball">
+      <cast_shadows>false</cast_shadows>
+      <geometry>
+      <sphere>
+        <radius>0.08</radius>
+      </sphere>
+      </geometry>
+        <material>
+          <script>
+            <uri>model://grey_wall/materials/scripts</uri>
+            <uri>model://grey_wall/materials/textures</uri>
+            <name>vrc/grey_wall</name>
+          </script>
+        </material>
+      </visual>-->
+
+
+<!--      <material>
+        <script>
+          <uri>model://arena_2017/materials/scripts</uri>
+          <uri>model://arena_2017/materials/textures</uri>
+          <name>arena_2017/FloorGrass</name>
+        </script>
+      </material>-->
+
+<!--<visual>
+  <material>
+    <ambient>0.19225 0.19225 0.19225 1.0</ambient>
+    <diffuse>0.50754 0.50754 0.50754 1.0</diffuse>
+    <specular>0.508273 0.508273 0.508273 1.0</specular>
+    <emissive>0.0 0.0 0.0 0.0</emissive>
+  </material>
+</visual>-->
    </gazebo>
+
+
+<!-- p3d plugin (3D Position Interface for Ground Truth)
+     This is required only for rviz that the balllink tf is known! -->
+   <gazebo>
+      <plugin name="ground_truth" filename="libgazebo_ros_p3d.so">
+         <frameName>world</frameName>
+         <bodyName>ball_link</bodyName>
+         <topicName>/gazebo/$(arg ball_name)/odom</topicName>
+         <updateRate>110.0</updateRate>
+      </plugin>
+   </gazebo>
+
+
 </robot>
 

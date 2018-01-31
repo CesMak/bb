@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<root>
+ <tabbed_widget name="Main Window" parent="main_window">
+  <plotmatrix columns="2" tab_name="plot" rows="2">
+   <plot col="0" row="0">
+    <range right="0.256000" top="0.039187" bottom="-0.041814" left="0.126000"/>
+    <limitY/>
+    <curve name="/ballbot/desired_torques/x" R="0" G="0" B="255"/>
+    <curve name="/ballbot/desired_torques/y" R="0" G="128" B="0"/>
+    <curve name="/ballbot/desired_torques/z" R="255" G="0" B="0"/>
+    <transform value="noTransform"/>
+   </plot>
+   <plot col="0" row="1">
+    <range right="0.256000" top="0.041237" bottom="-0.048411" left="0.126000"/>
+    <limitY/>
+    <curve name="/ballbot/rpy_angles/point/x" R="255" G="0" B="255"/>
+    <curve name="/ballbot/rpy_angles/point/y" R="0" G="0" B="128"/>
+    <curve name="/ballbot/rpy_angles/point/z" R="0" G="128" B="128"/>
+    <transform value="noTransform"/>
+   </plot>
+   <plot col="1" row="0">
+    <range right="0.252000" top="0.039187" bottom="-0.041814" left="0.132000"/>
+    <limitY/>
+    <curve name="/ballbot/joints/joint_states/wheel1_joint/eff" R="160" G="160" B="164"/>
+    <curve name="/ballbot/joints/joint_states/wheel2_joint/eff" R="128" G="128" B="0"/>
+    <curve name="/ballbot/joints/joint_states/wheel3_joint/eff" R="128" G="0" B="0"/>
+    <transform value="noTransform"/>
+   </plot>
+   <plot col="1" row="1">
+    <range right="0.260000" top="0.012226" bottom="-0.014546" left="0.127000"/>
+    <limitY/>
+    <curve name="/ballbot/sensor/imu/angular_velocity/x" R="0" G="0" B="255"/>
+    <curve name="/ballbot/sensor/imu/angular_velocity/y" R="0" G="128" B="0"/>
+    <curve name="/ballbot/sensor/imu/angular_velocity/z" R="255" G="0" B="0"/>
+    <transform value="noTransform"/>
+   </plot>
+  </plotmatrix>
+  <currentPlotMatrix index="0"/>
+ </tabbed_widget>
+ <tabbed_widget name="Main Window" parent="main_window">
+  <plotmatrix columns="2" tab_name="plot" rows="2">
+   <plot col="0" row="0">
+    <range right="0.256000" top="0.039187" bottom="-0.041814" left="0.126000"/>
+    <limitY/>
+    <curve name="/ballbot/desired_torques/x" R="0" G="0" B="255"/>
+    <curve name="/ballbot/desired_torques/y" R="0" G="128" B="0"/>
+    <curve name="/ballbot/desired_torques/z" R="255" G="0" B="0"/>
+    <transform value="noTransform"/>
+   </plot>
+   <plot col="0" row="1">
+    <range right="0.256000" top="0.041237" bottom="-0.048411" left="0.126000"/>
+    <limitY/>
+    <curve name="/ballbot/rpy_angles/point/x" R="255" G="0" B="255"/>
+    <curve name="/ballbot/rpy_angles/point/y" R="0" G="0" B="128"/>
+    <curve name="/ballbot/rpy_angles/point/z" R="0" G="128" B="128"/>
+    <transform value="noTransform"/>
+   </plot>
+   <plot col="1" row="0">
+    <range right="0.252000" top="0.039187" bottom="-0.041814" left="0.132000"/>
+    <limitY/>
+    <curve name="/ballbot/joints/joint_states/wheel1_joint/eff" R="160" G="160" B="164"/>
+    <curve name="/ballbot/joints/joint_states/wheel2_joint/eff" R="128" G="128" B="0"/>
+    <curve name="/ballbot/joints/joint_states/wheel3_joint/eff" R="128" G="0" B="0"/>
+    <transform value="noTransform"/>
+   </plot>
+   <plot col="1" row="1">
+    <range right="0.260000" top="0.012226" bottom="-0.014546" left="0.127000"/>
+    <limitY/>
+    <curve name="/ballbot/sensor/imu/angular_velocity/x" R="0" G="0" B="255"/>
+    <curve name="/ballbot/sensor/imu/angular_velocity/y" R="0" G="128" B="0"/>
+    <curve name="/ballbot/sensor/imu/angular_velocity/z" R="255" G="0" B="0"/>
+    <transform value="noTransform"/>
+   </plot>
+  </plotmatrix>
+  <currentPlotMatrix index="0"/>
+ </tabbed_widget>
+ <use_relative_time_offset enabled="0"/>
+ <Plugins>
+  <DataLoad_CSV>
+   <default time_axis=""/>
+  </DataLoad_CSV>
+  <DataLoad_ROS_bags>
+   <selected_topics list=""/>
+  </DataLoad_ROS_bags>
+  <ROS_Topic_Streamer>
+   <selected_topics list="/ballbot/desired_torques;/ballbot/rpy_angles;/ballbot/joints/joint_states"/>
+  </ROS_Topic_Streamer>
+  <RosoutPublisherROS/>
+  <TopicPublisherROS/>
+ </Plugins>
+ <previouslyLoadedStreamer name="ROS Topic Streamer"/>
+</root>
+

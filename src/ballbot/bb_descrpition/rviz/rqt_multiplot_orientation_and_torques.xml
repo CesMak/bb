@@ -180,7 +180,7 @@
                     <legend>
                         <visible>true</visible>
                     </legend>
-                    <plot_rate>200</plot_rate>
+                    <plot_rate>30</plot_rate>
                     <title>Orientation IMU</title>
                 </column_0>
             </row_0>
@@ -511,7 +511,7 @@
                     <legend>
                         <visible>true</visible>
                     </legend>
-                    <plot_rate>100</plot_rate>
+                    <plot_rate>30</plot_rate>
                     <title>Motor Torques</title>
                 </column_0>
             </row_1>

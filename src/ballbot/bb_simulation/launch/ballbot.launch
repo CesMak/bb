@@ -8,6 +8,9 @@
    <arg name="motors_controller_type" default="EffortJointInterface" />
    <arg name="wheel_type_single" default="False" /> <!-- Single(True), Double(False), caution the orientation of the two model's is different! this means beta is different -->
 
+   <arg name="imu_update_rate" default="200" /> <!-- update IMU this fast in Hz! -->
+   <arg name="control_period" default="0.001" /> <!-- 0.01 = 100Hz controller messages(joint) come all ... secs. should be same as update period?!-->
+
    <!-- THESE PARAMETERS ARE NOT USED YET: -->
    <arg name="multi_robot" default="False" />
    <arg name="ground_truth" default="True" />
@@ -25,7 +28,7 @@
    <include file="$(find gazebo_ros)/launch/empty_world.launch">
       <arg name="world_name" value="$(find ballbot_gazebo)/worlds/empty.world" />
       <arg name="paused" value="True" />
-      <arg name="use_sim_time" value="True" />
+      <arg name="use_sim_time" value="True" /> <!-- Tells ROS nodes asking for time to get the Gazebo-published simulation time, published over the ROS topic /clock (default true) -->
       <arg name="gui" value="True" />
       <arg name="headless" value="False" />
       <arg name="debug" value="False" />
@@ -40,6 +43,8 @@
          <arg name="use_diff_drive" value="$(arg use_diff_drive)" />
          <arg name="motors_controller_type" value="$(arg motors_controller_type)" />
          <arg name="wheel_type_single" value="$(arg wheel_type_single)" />
+         <arg name="imu_update_rate" value="$(arg imu_update_rate)"/>
+         <arg name="control_period" value="$(arg control_period)"/>
       </include>
 
       <!-- robot spawner -->
@@ -49,13 +54,15 @@
       <group ns="joints">
          <!-- HACK: Load the URDF into the ROS Parameter Server at gazebo controller
          namespace due to a bug in controller spawner
-         TODO - Do I need this hack?-->
+         TODO - Do I need this hack? -->
          <include file="$(find ballbot_description)/launch/bb_description.launch">
             <arg name="robot_name" value="$(arg robot_name)" />
             <arg name="ground_truth" value="$(arg ground_truth)" />
             <arg name="use_diff_drive" value="$(arg use_diff_drive)" />
             <arg name="motors_controller_type" value="$(arg motors_controller_type)" />
             <arg name="wheel_type_single" value="$(arg wheel_type_single)" />
+            <arg name="imu_update_rate" value="$(arg imu_update_rate)"/>
+            <arg name="control_period" value="$(arg control_period)"/>
          </include>
 
          <include file="$(find ballbot_gazebo)/launch/start_wheel_controllers.launch">
@@ -75,12 +82,11 @@
       </node>
    </group>
 
-    <!-- transform ground truth pose to tf -> for world transformation -->
-    <node name="odom_to_tf" pkg="message_to_tf" type="message_to_tf">
+    <!-- transform ground truth pose to tf -> for world transformation required for rviz tf-->
+    <node name="odom_to_tf_robot" pkg="message_to_tf" type="message_to_tf">
       <param name="odometry_topic" type="string" value="/gazebo/$(arg robot_name)/odom" />
       <param name="child_frame_id" type="string" value="base_footprint" />
     </node>
-
 
    <!-- load ball description: -->
    <group ns="$(arg ball_name)" if="$(arg use_the_ball)">
@@ -89,13 +95,13 @@
          <arg name="wheel_type_single" value="$(arg wheel_type_single)"/>
       </include>
    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg ball_name) -param robot_description -x $(arg x_pos)   -y $(arg y_pos) -z $(arg z_pos)" />
-
-      <!-- then in rviz the ball is moving:-->
-      <node pkg="robot_state_publisher" type="robot_state_publisher" name="ball_state_publisher" output="screen">
-         <param name="tf_prefix" type="string" value="$(arg ball_name)" />
-      </node>
   </group>
 
+    <!-- transform ground truth pose to tf -> for world transformation FOR THE BALL required for rviz tf -->
+    <node name="odom_to_tf_ball" pkg="message_to_tf" type="message_to_tf">
+      <param name="odometry_topic" type="string" value="/gazebo/$(arg ball_name)/odom" />
+      <param name="child_frame_id" type="string" value="ball_link" />
+    </node>
 
 <!-- start our controller: for the ballbot: or the drive controller -->
 <include file="$(find bb_control)/launch/start_control_node.launch">
@@ -108,13 +114,17 @@
 <include file="$(find ballbot_gazebo)/launch/start_realsense_tf_publisher.launch" />
 -->
 
-<!-- start rviz node:
+<!-- start rviz node: -->
 <node pkg="rviz" type="rviz" name="rviz" args="-d $(find ballbot_description)/rviz/model.rviz"/>
+
+
+<!-- start rqt_multiplot node:
+<node pkg="rqt_multiplot" type="rqt_multiplot" name="rqt_multiplot" args=""/>
 -->
 
-<!-- start rqt_multiplot node: -->
-<node pkg="rqt_multiplot" type="rqt_multiplot" name="rqt_multiplot" args=""/>
-
+<!-- start plotjuggler   -l $(find ballbot_description)/rviz/plot_juggler_layout.xml
+<node pkg="plotjuggler" type="PlotJuggler" name="my_plot_Juggler" args="" />
+-->
 
    <!-- start rqt: rosrun rqt_gui rqt_gui   if starts to fast just click blue refresh button!
 <node name="ballbot_rqt" pkg="rqt_gui" type="rqt_gui" respawn="false"

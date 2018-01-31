@@ -45,6 +45,7 @@
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
 #include <std_msgs/Float64.h>
+#include <geometry_msgs/PointStamped.h>
 
 #include <Eigen/Dense>  /* for matrix multiplication */
 #include <math.h>       /* sin, sqrt */
@@ -108,6 +109,10 @@ protected:
 
   double alpha_;
   double beta_;
+  double sa_;
+  double sb_;
+  double ca_;
+  double cb_;
 
   //publisher:
   ros::Subscriber imu_sub_;

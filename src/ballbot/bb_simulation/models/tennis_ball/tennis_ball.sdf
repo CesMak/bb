@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+
+<sdf version="1.5">
+<model name="tennis_ball">
+  <pose>0 0 0.032 0 0 0</pose>
+    <link name="link">
+      <velocity_decay>
+        <linear>0</linear>
+        <angular>0.001</angular>
+      </velocity_decay>
+      <inertial>
+        <mass>0.056</mass>
+        <inertia>
+          <ixx>0.000038</ixx>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyy>0.000038</iyy>
+          <iyz>0.0</iyz>
+          <izz>0.000038</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <sphere>
+            <radius>0.032</radius>
+          </sphere>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.25</mu>
+              <mu2>0.25</mu2>
+            </ode>
+          </friction>
+          <bounce>
+            <restitution_coefficient>0.8</restitution_coefficient>
+            <threshold>0.0</threshold>
+          </bounce>
+          <contact>
+            <ode>
+              <max_vel>1000</max_vel>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://tennis_ball/meshes/tennis_ball.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>

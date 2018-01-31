@@ -7,22 +7,22 @@
 <xacro:include filename="$(find ballbot_description)/urdf/ball_double_wheel.gazebo.xacro" />
 
 <xacro:macro name="ball_double_macro">
-      <link name="base_footprint" />
+<!--      <link name="base_footprint_ball" />
       <joint name="body_joint" type="fixed">
-         <parent link="base_footprint" />
+         <parent link="base_footprint_ball" />
          <child link="ball_link" />
          <origin xyz="0.0 0.0 0.080" rpy="0.0 0.0 0.0" />
-      </joint>
+      </joint>-->
 
       <link name="ball_link">
-         <visual>
+         <visual name ="basket_ball">
             <origin xyz="0 0 0.0" rpy="0 0 0" />
-            <geometry>
-               <mesh filename="package://ballbot_description/meshes/base/Ball_160mm_2.stl" scale="0.001 0.001 0.001" />
+            <geometry> <!-- if you wanna use no texture use:  <mesh filename="package://ballbot_description/meshes/base/Ball_160mm_2.stl" scale="0.001 0.001 0.001" /> -->
+               <mesh filename="package://ballbot_gazebo/models/soccer_ball/meshes/ball.dae" scale="0.001 0.001 0.001" />
             </geometry>
             <cast_shadows>1</cast_shadows>
             <transparency>0</transparency>
-            <material name="yellow"/>
+            <material name="basket_ball"/>
          </visual>
          <inertial>
             <origin xyz="0.0 0.0 0.0" />
@@ -32,7 +32,7 @@
          <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-               <mesh filename="package://ballbot_description/meshes/base/Ball_160mm_2.stl" scale="0.001 0.001 0.001" />
+               <mesh filename="package://ballbot_gazebo/models/soccer_ball/meshes/ball.dae" scale="0.001 0.001 0.001" />
             </geometry>
          </collision>
       </link>
