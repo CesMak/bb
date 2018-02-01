@@ -22,7 +22,7 @@
 
    <!-- subwheels parameters : -->
    <xacro:property name="mass_subwheel" value="0.006" />
-   <xacro:property name="d_inertia_subwheel" value="0.00000001" />    <!-- unit is kg m^2 diagonal inertia value for ixx,iyy,izz -->
+   <xacro:property name="d_inertia_subwheel" value="1e-8" />    <!-- unit is kg m^2 diagonal inertia value for ixx,iyy,izz -->
 
 
    <!--motor values:-->
@@ -132,7 +132,7 @@
             <child link="subwheel${pos}_${orient}_link" />
             <xacro:insert_block name="joint_origin_sub" />
             <axis xyz="1 0 0" />
-            <limit effort="0" velocity="0" />
+            <limit effort="0.0" velocity="0.0" />
             <dynamics friction="0.0" damping="0.0" />
          </joint>
 

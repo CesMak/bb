@@ -4,10 +4,10 @@
       <gravity>1</gravity>
       <maxVel>0.01</maxVel>
       <minDepth>0</minDepth>
-      <mu1>1000</mu1>
-      <mu2>1000</mu2>
+      <mu1>1e+3</mu1>
+      <mu2>1e+3</mu2>
       <fdir1>0 0 0</fdir1>
-      <kp>5e+6</kp>
+      <kp>5e+5</kp>
       <kd>10.0</kd>
       <selfCollide>0</selfCollide>
       <maxContacts>10</maxContacts>
