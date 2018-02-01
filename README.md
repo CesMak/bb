@@ -1,10 +1,10 @@
-# Simulation
-
 Hey, I would like to share my code of the simulation of a Ballbot in Gazebo. Unfortunately the Ballbot is currently not balancing that long (10sec at best). I am not sure what the reasons are, but I would be really happy if you just test it and play around with it -maybe you can tell me why it is not balancing.
 
 Please see the [Problems Area](https://github.com/CesMak/bb/wiki/Simulation#Problems) and feel free to write me an Email (MarkusLamprecht@live.de) if you have any improvements. 
 
-(Here youtube video link) 
+![Ballbot Simulation](https://github.com/CesMak/bb/blob/master/img/Ballbot_SimulationRecap.gif)
+
+[**Installation youtube video**](https://www.youtube.com/watch?v=a7RVCsyNebY&feature=youtu.be)
 
 ## Prerequisites
 * Gazebo 7
