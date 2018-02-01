@@ -3,12 +3,13 @@
    <xacro:arg name="motors_controller_type" default="EffortJointInterface" />
    <xacro:arg name="imu_update_rate" default="100" />
    <xacro:arg name="control_period" default="0.01" />
+   <xacro:arg name="laser_visual" default="False" /> <!-- If this is true only in gazebo the lds scanner is visualized in blue! -->
+   <xacro:arg name="ground_truth" default="False" />
 
     <!-- not used yet: -->
    <xacro:arg name="imu_visual" default="False" />
-   <xacro:arg name="ground_truth" default="False" />
    <xacro:arg name="use_diff_drive" default="False" />
-   <xacro:arg name="laser_visual" default="False" /> <!-- is this used yet?! -->
+
 
    <!-- controllers: -->
    <gazebo>

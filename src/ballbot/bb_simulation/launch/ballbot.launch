@@ -1,23 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
+   <!-- use additional tools: -->
+   <arg name="start_rviz" default="True"/>
+   <arg name="start_rqt_multiplot" default="False"/>
+   <arg name="start_plotjuggler" default="False"/>
+   <arg name="start_rqt_gui" default="False"/>
+
    <arg name="robot_name" default="ballbot" />
    <arg name="ball_name" default="ball" />
    <arg name="use_the_ball" default="True" /> <!-- If wheel_type_single: a ball of 400g and 0.7m diameter is loaded, If wheel_type_double: a ball of 326g and 160mm diameter is loaded -->
    <arg name="controller_type" default="2D" /> <!-- 2D, 3D, drive -->
-   <!-- PositionJointInterface, VelocityJointInterface, EffortJointInterface -->
-   <arg name="motors_controller_type" default="EffortJointInterface" />
+   <arg name="motors_controller_type" default="EffortJointInterface" />    <!-- PositionJointInterface, VelocityJointInterface, EffortJointInterface -->
    <arg name="wheel_type_single" default="False" /> <!-- Single(True), Double(False), caution the orientation of the two model's is different! this means beta is different -->
 
    <arg name="imu_update_rate" default="200" /> <!-- update IMU this fast in Hz! -->
    <arg name="control_period" default="0.001" /> <!-- 0.01 = 100Hz controller messages(joint) come all ... secs. should be same as update period?!-->
+   <arg name="ground_truth" default="True" />
 
    <!-- THESE PARAMETERS ARE NOT USED YET: -->
    <arg name="multi_robot" default="False" />
-   <arg name="ground_truth" default="True" />
-   <arg name="use_diff_drive" default="True" />
+   <arg name="use_diff_drive" default="True" />     <!-- if True diff drive is off! -->
    <!-- <arg name="verbose" default="-e bullet"/> -->
-
-   <!-- if True diff drive is off! -->
 
    <!--  Robots start position:-->
    <arg name="robot_x_pos" default="0.0" />
@@ -120,21 +123,22 @@
 <include file="$(find ballbot_gazebo)/launch/start_realsense_tf_publisher.launch" />
 -->
 
-<!-- start rviz node:
-<node pkg="rviz" type="rviz" name="rviz" args="-d $(find ballbot_description)/rviz/model.rviz"/>
--->
+<!-- start additional tool's: -->
+<group if="$(arg start_rviz)">
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find ballbot_description)/rviz/model.rviz"/>
+</group>
 
-<!-- start rqt_multiplot node:
-<node pkg="rqt_multiplot" type="rqt_multiplot" name="rqt_multiplot" args=""/>
--->
+<group if="$(arg start_rqt_multiplot)">
+  <node pkg="rqt_multiplot" type="rqt_multiplot" name="rqt_multiplot" args=""/>
+</group>
 
-<!-- start plotjuggler   -l $(find ballbot_description)/rviz/plot_juggler_layout.xml
-<node pkg="plotjuggler" type="PlotJuggler" name="my_plot_Juggler" args="" />
--->
+<group if="$(arg start_plotjuggler)"> <!--  -l $(find ballbot_description)/rviz/plot_juggler_layout.xml -->
+ <node pkg="plotjuggler" type="PlotJuggler" name="my_plot_Juggler" args="" />
+</group>
 
-   <!-- start rqt: rosrun rqt_gui rqt_gui   if starts to fast just click blue refresh button!
-<node name="ballbot_rqt" pkg="rqt_gui" type="rqt_gui" respawn="false"
-      output="screen" args="-perspective-file $(find ballbot_description)/rviz/bb_rqt.perspective"/>
--->
+<group if="$(arg start_rqt_gui)">   <!-- start rqt: rosrun rqt_gui rqt_gui   if starts to fast just click blue refresh button! -->
+  <node name="ballbot_rqt" pkg="rqt_gui" type="rqt_gui" respawn="false" output="screen" args="-perspective-file $(find ballbot_description)/rviz/bb_rqt.perspective"/>
+</group>
+
 </launch>
 
