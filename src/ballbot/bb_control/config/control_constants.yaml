@@ -4,7 +4,7 @@ control_constants:
   # controller_type:        # "2D","3D","drive", this value is set through launch file!
   # motors_controller_type: # "PositionJointInterface", "VelocityJointInterface", "EffortJointInterface" this value is set through launch file.
 
-  #Control2D Gains:
+  #Control2D Gains: (currently without odometry)
   gains_2D_Kxz: [ 0.0,  -28,  0.0, -1]  #x=[phix thetax dphix dthetax] #negative values here! motors are turned internally!
   gains_2D_Kyz: [ 0.0,  -28,  0.0, -1]  #x=[phiy thetay dphiy dthetay]
   Kr: 5.32
@@ -24,3 +24,8 @@ control_constants:
 #Notes: Yellow Ball Double Wheel Config:
 #alpha: 0.78539816339 #[rad]   45°
 #beta:  0.0  #[rad]   0°
+
+# Notes on the Control2D Gains:
+# best results with: [ 0.0,  -28,  0.0, -1]
+# according to matlab we need: [ 0.0,  -18.73,  0.0, -4.43]
+# The gains_2D_Kxz and the gains_2D_Kyz should be identically if the center of mass is in the middle of the robot.

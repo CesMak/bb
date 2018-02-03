@@ -6,7 +6,7 @@
 # see also: http://wiki.ros.org/ros_control
 # TODO: get internal PID Values of the real motors and insert them here!
 
-# Effort Controllers --------------------------------------------> no constant effort?!
+# Effort Controllers --------------------------------------------> works
 # if effort is huge e.g: 4.0 no constant effort possible.
 # if effort is small e.g: 0.1 constant effort almost all the time possible.
 wheel1_effort_controller:

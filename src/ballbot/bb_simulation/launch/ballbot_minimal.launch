@@ -21,9 +21,6 @@
    <arg name="control_period" default="0.001" /> <!-- 0.01 = 100Hz controller messages(joint) come all ... secs. should be same as update period?!-->
    <arg name="ground_truth" default="True" />
 
-   <!-- If you wanna use a different gazebo physics engine: -->
-   <!-- <arg name="verbose" default="-e bullet"/> -->
-
    <!--  Robots start position:-->
    <arg name="robot_x_pos" default="0.0" />
    <arg name="robot_y_pos" default="0.0" />
@@ -46,7 +43,6 @@
    </include>
 
    <group ns="$(arg robot_name)">
-
       <!-- load robot_description -->
       <include file="$(find ballbot_description)/launch/bb_description.launch">
          <arg name="robot_name" value="$(arg robot_name)" />
@@ -64,42 +60,15 @@
 
       <!-- load controllers -->
       <group ns="joints">
-         <!-- HACK: Load the URDF into the ROS Parameter Server at gazebo controller
-         namespace due to a bug in controller spawner
-         TODO - Do I need this hack? -->
-         <include file="$(find ballbot_description)/launch/bb_description.launch">
-            <arg name="robot_name" value="$(arg robot_name)" />
-            <arg name="ground_truth" value="$(arg ground_truth)" />
-            <arg name="motors_controller_type" value="$(arg motors_controller_type)" />
-            <arg name="wheel_type_single" value="$(arg wheel_type_single)" />
-            <arg name="imu_update_rate" value="$(arg imu_update_rate)"/>
-            <arg name="control_period" value="$(arg control_period)"/>
-            <arg name="use_realsense" value="$(arg use_realsense)"/>
-            <arg name="use_laser" value="$(arg use_laser)"/>
-         </include>
-
          <include file="$(find ballbot_gazebo)/launch/start_wheel_controllers.launch">
              <arg name="motors_controller_type" value="$(arg motors_controller_type)" />
          </include>
 
-          <!-- -->
-         <include file="$(find ballbot_gazebo)/launch/start_joint_state_controller.launch">
+         <!-- <include file="$(find ballbot_gazebo)/launch/start_joint_state_controller.launch">
            <arg name="publish_rate" value="100"/>
-         </include>
+         </include> -->
       </group>
-
-      <!-- tf publisher -->
-      <remap from="joint_states" to="joints/joint_states" />
-      <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
-         <param name="tf_prefix" type="string" value="$(arg robot_name)" if="False" /> <!-- False use no multi_robot -->
-      </node>
    </group>
-
-    <!-- transform ground truth pose to tf -> for world transformation required for rviz tf-->
-    <node name="odom_to_tf_robot" pkg="message_to_tf" type="message_to_tf">
-      <param name="odometry_topic" type="string" value="/gazebo/$(arg robot_name)/odom" />
-      <param name="child_frame_id" type="string" value="base_footprint" />
-    </node>
 
    <!-- load ball description: -->
    <group ns="$(arg ball_name)" if="$(arg use_the_ball)">
@@ -110,22 +79,11 @@
    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg ball_name) -param robot_description -x $(arg ball_x_pos) -y $(arg ball_y_pos) -z $(arg ball_z_pos)" />
   </group>
 
-    <!-- transform ground truth pose to tf -> for world transformation FOR THE BALL required for rviz tf -->
-    <node name="odom_to_tf_ball" pkg="message_to_tf" type="message_to_tf">
-      <param name="odometry_topic" type="string" value="/gazebo/$(arg ball_name)/odom" />
-      <param name="child_frame_id" type="string" value="ball_link" />
-    </node>
-
 <!-- start our controller: for the ballbot: or the drive controller -->
 <include file="$(find bb_control)/launch/start_control_node.launch">
   <arg name="controller_type" value="$(arg controller_type)" />
   <arg name="motors_controller_type" value="$(arg motors_controller_type)" />
 </include>
-
-
-<!-- real sense: tf publisher:
-<include file="$(find ballbot_gazebo)/launch/start_realsense_tf_publisher.launch" />
--->
 
 <!-- start additional tool's: -->
 <group if="$(arg start_rviz)">

@@ -2,9 +2,13 @@
 
 <launch>
   <!-- these are the arguments you can pass this launch file-->
+
+  <!-- choose sensors to be used: -->
+  <arg name="use_realsense" default="True"/>
+  <arg name="use_laser" default="True"/>
+
   <arg name="robot_name" default="ballbot" />
   <arg name="ground_truth" default="False" />
-  <arg name="use_diff_drive" default="False" />
   <arg name="motors_controller_type" default="PositionJointInterface" /> <!-- PositionJointInterface, VelocityJointInterface, EffortJointInterface -->
   <arg name="wheel_type_single" default="True" />
   <arg name="imu_update_rate" default="100" />
@@ -14,10 +18,11 @@
   <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find ballbot_description)/urdf/bb.xacro'
     robot_name:=$(arg robot_name)
     ground_truth:=$(arg ground_truth)
-    use_diff_drive:=$(arg use_diff_drive)
     motors_controller_type:=$(arg motors_controller_type)
     wheel_type_single:=$(arg wheel_type_single)
     imu_update_rate:=$(arg imu_update_rate)
-    control_period:=$(arg control_period)"
+    control_period:=$(arg control_period)
+    use_laser:=$(arg use_laser)
+    use_realsense:=$(arg use_realsense)"
     />
 </launch>

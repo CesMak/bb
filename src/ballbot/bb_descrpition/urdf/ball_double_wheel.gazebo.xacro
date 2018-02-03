@@ -7,8 +7,8 @@
       <mu1>1e+3</mu1>
       <mu2>1e+3</mu2>
       <fdir1>0 0 0</fdir1>
-      <kp>5e+5</kp>
-      <kd>10.0</kd>
+      <kp>1e+18</kp>
+      <kd>1.0</kd>
       <selfCollide>0</selfCollide>
       <maxContacts>10</maxContacts>
 <!--      <visual name="basket_ball">
