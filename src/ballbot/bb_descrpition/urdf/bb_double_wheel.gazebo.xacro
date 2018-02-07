@@ -177,8 +177,8 @@ mu of speichen_wheel actually does not matter cause it has no contact point!
       <gazebo reference="subwheel${suffix}_link">
          <mu1>1e+3</mu1>
          <mu2>1e+3</mu2>
-         <kp>5e+5</kp>
-         <kd>10.0</kd>
+         <kp>1e+10</kp>
+         <kd>1.0</kd>
          <minDepth>0.001</minDepth>
          <maxVel>0.1</maxVel>
          <fdir1>1 0 0</fdir1>

@@ -72,6 +72,7 @@ protected:
 
   void calc2DMotorCommands();
   void calc2MotorCommands_withoutOdometry();
+  void calc2MotorCommands_withOdometry();
   std::vector<double> toEulerAngle(double x, double y, double z, double w);
 
   std::vector<double> convertToAngleVel(std::vector<double> input_vec);
@@ -114,17 +115,20 @@ protected:
   double ca_;
   double cb_;
 
-  //publisher:
+  int balancing_time_;
+
+
+   // subscriber
   ros::Subscriber imu_sub_;
   ros::Subscriber joints_sub_;
 
-  // subscriber
+  //publisher:
   ros::Publisher joint_commands_1_pub_;
   ros::Publisher joint_commands_2_pub_;
   ros::Publisher joint_commands_3_pub_;
   ros::Publisher rpy_pub_;
+  ros::Publisher calc_ball_odom_pub_;
   ros::Publisher desired_torques_pub_;    // calculated torques in NM!
-
 
   // action server
 

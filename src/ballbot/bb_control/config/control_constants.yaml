@@ -1,12 +1,12 @@
 control_constants:
-  update_rate: 100.0 # [Hz]   publish motor torques with this frequency.
+  update_rate: 100.0 # [Hz]   publish motor torques with this frequency. every 10ms = 100Hz
 
   # controller_type:        # "2D","3D","drive", this value is set through launch file!
   # motors_controller_type: # "PositionJointInterface", "VelocityJointInterface", "EffortJointInterface" this value is set through launch file.
 
   #Control2D Gains: (currently without odometry)
-  gains_2D_Kxz: [ 0.0,  -28,  0.0, -1]  #x=[phix thetax dphix dthetax] #negative values here! motors are turned internally!
-  gains_2D_Kyz: [ 0.0,  -28,  0.0, -1]  #x=[phiy thetay dphiy dthetay]
+  gains_2D_Kxz: [ 0.0,  -28,  -0.0, -1]  #x=[phix thetax dphix dthetax] #negative values here! motors are turned internally!
+  gains_2D_Kyz: [ 0.0,  -28,  -0.0, -1]  #x=[phiy thetay dphiy dthetay]
   Kr: 5.32
   Tv: 1 #[sec]
 

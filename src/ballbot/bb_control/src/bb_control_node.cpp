@@ -135,6 +135,39 @@ namespace ballbot
     realT_ = {-T1, -T2, -T3}; // wheels turn the other way round!
   }
 
+
+  // this node is updated every 10ms.
+  // this calculation takes less than 1ms.
+  void ControlNode::calc2MotorCommands_withOdometry()
+  {
+  // See Page 89 of ETHZ Script.
+    double phi_x_dot = (2*cos(imu_phi_[1])*((6*imu_dphi_[0])/25 + (3*pow(2,0.5)*(joints_velocity_[1] - 2*joints_velocity_[0] + joints_velocity_[2]))/100))/75 + (pow(2,0.5)*cos(imu_phi_[0])*sin(imu_phi_[1])*(joints_velocity_[0] + joints_velocity_[1] + joints_velocity_[2]))/1250 - (pow(2,0.5)*pow(3,0.5)*sin(imu_phi_[0])*sin(imu_phi_[1])*(joints_velocity_[1] - joints_velocity_[2]))/1250;
+
+    double phi_y_dot = -1*(4*imu_dphi_[1])/625 - (pow(2,0.5)*sin(imu_phi_[0])*(joints_velocity_[0] + joints_velocity_[1] + joints_velocity_[2]))/1250 - (pow(2,0.5)*pow(3,0.5)*cos(imu_phi_[0])*(joints_velocity_[1] - joints_velocity_[2]))/1250;
+
+    //angular velocity of ball in rad/sec.
+    geometry_msgs::PointStamped ball_odom;
+    ball_odom.header.stamp = ros::Time::now();
+    ball_odom.header.frame_id = "ball_odom_phi_x,y_dot";
+    ball_odom.point.x = phi_x_dot*180/3.14159265359;
+    ball_odom.point.y = phi_y_dot*180/3.14159265359;
+    ball_odom.point.z = 0.0;
+    calc_ball_odom_pub_.publish(ball_odom);
+
+    double Tx = -1.0*(gains_2D_Kxz_[1]*imu_phi_[0]+gains_2D_Kxz_[3]*imu_dphi_[0]+gains_2D_Kxz_[2]*phi_x_dot);
+
+    double Ty = -1.0*(gains_2D_Kyz_[1]*imu_phi_[1]+gains_2D_Kyz_[3]*imu_dphi_[1]+gains_2D_Kyz_[2]*phi_y_dot);
+
+    double Tz = 0.0;
+
+    Ty=-Ty;
+    double T1=(2*cb_)/(3*ca_)*Tx+(2*sb_)/(3*ca_)*Ty+1/(3*sa_)*Tz;
+    double T2=-(cb_+sqrt(3)*sb_)/(3*ca_)*Tx+(-sb_+sqrt(3)*cb_)/(3*ca_)*Ty+1/(3*sa_)*Tz;
+    double T3=(-cb_+sqrt(3)*sb_)/(3*ca_)*Tx-(sb_+sqrt(3)*cb_)/(3*ca_)*Ty+1/(3*sa_)*Tz;
+
+    realT_ = {-T1, -T2, -T3}; // wheels turn the other way round!
+  }
+
   //2D Control calculation:
   void ControlNode::calc2DMotorCommands()
   {
@@ -224,8 +257,8 @@ namespace ballbot
   ControlNode::ControlNode(ros::NodeHandle& nh)
   {
     //get Params:
-    controller_type_ = nh.param("control_constants/controller_type",std::string("2D"));
-    motors_controller_type_ = nh.param("control_constants/motors_controller_type",std::string("VelocityJointInterface"));
+    controller_type_ = nh.param("control_constants/controller_type", std::string("2D"));
+    motors_controller_type_ = nh.param("control_constants/motors_controller_type", std::string("VelocityJointInterface"));
 
     // get 2D control gains:
     gains_2D_Kxz_=nh.param("control_constants/gains_2D_Kxz",(std::vector<double> ) {1.0,2.0,3.0,4.0});
@@ -233,7 +266,7 @@ namespace ballbot
     Kr_ = nh.param("control_constants/Kr", (double) 5.32);
     Tv_ = nh.param("control_constants/Tv", (double) 1.0);
 
-    alpha_=nh.param("control_constants/alpha", 45.0); // in rad!
+    alpha_=nh.param("control_constants/alpha", 0.781); // in rad!
     beta_=nh.param("control_constants/beta", 0.0);
     sa_=sin(alpha_);
     sb_=sin(beta_);
@@ -261,6 +294,7 @@ namespace ballbot
 
     //Publish rpy angles:
     rpy_pub_ =  nh.advertise<geometry_msgs::PointStamped>("rpy_angles", 5);
+    calc_ball_odom_pub_ = nh.advertise<geometry_msgs::PointStamped>("ball_odom_", 5);
 
     //Publish desired torques:
     desired_torques_pub_ = nh.advertise<geometry_msgs::Vector3>("desired_torques", 5);
@@ -284,6 +318,8 @@ namespace ballbot
     phi_ball_actual_ = {0,0,0};
     phi_ball_last_ = {0,0,0};
     imu_phi_last_ = {0,0,0};
+
+    joints_velocity_={0.0, 0.0, 0.0};
   }
 
   // ROS API Callbacks: http://docs.ros.org/api/sensor_msgs/html/msg/Imu.html
@@ -292,20 +328,27 @@ namespace ballbot
   {
     previous_imu_msg_ = *imu_msg;
     imu_phi_ = toEulerAngle(previous_imu_msg_.orientation.x, previous_imu_msg_.orientation.y, previous_imu_msg_.orientation.z, previous_imu_msg_.orientation.w); //rad
-    imu_phi_[1]=-imu_phi_[1];
+    imu_phi_[1]=-imu_phi_[1]; // drehe die y-Achse ist auch beim echten system anders!
+    // TODO: z-Achse müsste auch noch gedreht werden!
     imu_dphi_.at(0)=previous_imu_msg_.angular_velocity.x; // rad/sec
     imu_dphi_.at(1)=-previous_imu_msg_.angular_velocity.y;
     imu_dphi_.at(2)=previous_imu_msg_.angular_velocity.z;
+
+    balancing_time_ =previous_imu_msg_.header.stamp.toSec();
   }
 
   void ControlNode::jointsCallback(const sensor_msgs::JointStateConstPtr& joint_state_msg)
   {
+    previous_joint_state_msg_ = *joint_state_msg;
+    joints_velocity_[0] = previous_joint_state_msg_.velocity[30]; // wheel1
+    joints_velocity_[1] = previous_joint_state_msg_.velocity[31]; // wheel2
+    joints_velocity_[2] = previous_joint_state_msg_.velocity[32]; // wheel3
   }
 
   //update (publish messages...) every 10ms. This is only updated every 100 ms! but why?!
   void ControlNode::update()
   {
-    calc2MotorCommands_withoutOdometry();
+    calc2MotorCommands_withOdometry();
 
     // note that the wheel torque is limited to ca. 4.1Nm.
     std_msgs::Float64 realT1;
@@ -336,6 +379,11 @@ namespace ballbot
     rpy.point.y = imu_phi_.at(1)*180/3.14159265359;
     rpy.point.z = imu_phi_.at(2)*180/3.14159265359;
     rpy_pub_.publish(rpy);
+
+    if(abs(rpy.point.x)>10 || abs(rpy.point.y)>10)
+    {
+      std::cout<<" erfüllt "<<balancing_time_<<std::endl;
+    }
   }
 
 }  // end namespace ballbot
