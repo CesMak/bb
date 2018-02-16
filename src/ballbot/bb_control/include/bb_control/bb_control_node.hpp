@@ -39,6 +39,7 @@
 #define BB_CONTROL_NODE_H__
 
 #include <ros/ros.h>
+#include <ros/console.h>
 //#include <bb_control/bb_control2D.hpp>
 
 // ROS messages:

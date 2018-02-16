@@ -91,7 +91,7 @@
 
    <!-- subwheels transmission's are not required or?
    In case you  are not interested in the tf's of them visualized in rviz gnerate them!-->
-   <!-- generate subwheel transmission links: -->
+   <!-- generate subwheel transmission links:
    <xacro:transmission_subwheel_pos_macro pos="1">
    </xacro:transmission_subwheel_pos_macro>
 
@@ -100,7 +100,7 @@
 
    <xacro:transmission_subwheel_pos_macro pos="3">
    </xacro:transmission_subwheel_pos_macro>
-
+-->
 
    <!-- p3d plugin (3D Position Interface for Ground Truth) -->
    <xacro:if value="$(arg ground_truth)">

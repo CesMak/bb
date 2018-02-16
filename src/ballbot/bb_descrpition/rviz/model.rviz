@@ -5,11 +5,10 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-        - /TF1
         - /BallModel1/Links1
         - /DepthCloud1/Auto Size1
       Splitter Ratio: 0.382681578
-    Tree Height: 540
+    Tree Height: 474
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -318,65 +317,65 @@ Visualization Manager:
         imu_link:
           Value: true
         subwheel1_1_in_link:
-          Value: true
+          Value: false
         subwheel1_1_out_link:
-          Value: true
+          Value: false
         subwheel1_2_in_link:
-          Value: true
+          Value: false
         subwheel1_2_out_link:
-          Value: true
+          Value: false
         subwheel1_3_in_link:
-          Value: true
+          Value: false
         subwheel1_3_out_link:
-          Value: true
+          Value: false
         subwheel1_4_in_link:
-          Value: true
+          Value: false
         subwheel1_4_out_link:
-          Value: true
+          Value: false
         subwheel1_5_in_link:
-          Value: true
+          Value: false
         subwheel1_5_out_link:
-          Value: true
+          Value: false
         subwheel2_1_in_link:
-          Value: true
+          Value: false
         subwheel2_1_out_link:
-          Value: true
+          Value: false
         subwheel2_2_in_link:
-          Value: true
+          Value: false
         subwheel2_2_out_link:
-          Value: true
+          Value: false
         subwheel2_3_in_link:
-          Value: true
+          Value: false
         subwheel2_3_out_link:
-          Value: true
+          Value: false
         subwheel2_4_in_link:
-          Value: true
+          Value: false
         subwheel2_4_out_link:
-          Value: true
+          Value: false
         subwheel2_5_in_link:
-          Value: true
+          Value: false
         subwheel2_5_out_link:
-          Value: true
+          Value: false
         subwheel3_1_in_link:
-          Value: true
+          Value: false
         subwheel3_1_out_link:
-          Value: true
+          Value: false
         subwheel3_2_in_link:
-          Value: true
+          Value: false
         subwheel3_2_out_link:
-          Value: true
+          Value: false
         subwheel3_3_in_link:
-          Value: true
+          Value: false
         subwheel3_3_out_link:
-          Value: true
+          Value: false
         subwheel3_4_in_link:
-          Value: true
+          Value: false
         subwheel3_4_out_link:
-          Value: true
+          Value: false
         subwheel3_5_in_link:
-          Value: true
+          Value: false
         subwheel3_5_out_link:
-          Value: true
+          Value: false
         wheel1_link:
           Value: true
         wheel2_link:
@@ -385,11 +384,11 @@ Visualization Manager:
           Value: true
         world:
           Value: true
-      Marker Scale: 0.100000001
+      Marker Scale: 0.200000003
       Name: TF
       Show Arrows: true
       Show Axes: true
-      Show Names: false
+      Show Names: true
       Tree:
         world:
           base_footprint:
@@ -530,7 +529,7 @@ Visualization Manager:
       Decay Time: 0
       Depth Map Topic: /ballbot/sensor/camera/depth/image_raw
       Depth Map Transport Hint: raw
-      Enabled: false
+      Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 4096
@@ -548,7 +547,7 @@ Visualization Manager:
       Topic Filter: true
       Use Fixed Frame: true
       Use rainbow: true
-      Value: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 108; 108; 108
@@ -574,25 +573,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 1.24758899
+      Distance: 1.3115114
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.034108758
-        Y: 0.0173962116
-        Z: 0
+        X: 0.121415779
+        Y: 0.0762938559
+        Z: -2.98023224e-08
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.425203592
+      Pitch: 0.255203664
       Target Frame: <Fixed Frame>
       Value: XYOrbit (rviz)
-      Yaw: 5.23457479
+      Yaw: 0.676389575
     Saved: ~
 Window Geometry:
   Displays:
@@ -602,7 +601,7 @@ Window Geometry:
   Hide Right Dock: true
   Image:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000400000000000001890000037afc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006100fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c0061007900730100000028000002ab000000d700fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d00610067006501000002d9000000c90000001600ffffff000000010000010f0000039bfc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a0056006900650077007300000000270000039b000000ad00fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000003b00000003efc0100000002fb0000000800540069006d00650100000000000003b00000030000fffffffb0000000800540069006d00650100000000000004500000000000000000000002210000037a00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000400000000000001890000037afc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000006100fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000002800000269000000d700fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d00610067006501000002970000010b0000001600ffffff000000010000010f0000039bfc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a0056006900650077007300000000270000039b000000ad00fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000003b00000003efc0100000002fb0000000800540069006d00650100000000000003b00000030000fffffffb0000000800540069006d00650100000000000004500000000000000000000002210000037a00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -612,5 +611,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 944
-  X: 2342
-  Y: 24
+  X: 1967
+  Y: 51

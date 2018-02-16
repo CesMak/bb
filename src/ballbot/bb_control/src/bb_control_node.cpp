@@ -382,7 +382,7 @@ namespace ballbot
 
     if(abs(rpy.point.x)>10 || abs(rpy.point.y)>10)
     {
-      std::cout<<" erfüllt "<<balancing_time_<<std::endl;
+      ROS_WARN_ONCE("x || y = higher than 10° Grad!"); // shows the simulation time!
     }
   }
 

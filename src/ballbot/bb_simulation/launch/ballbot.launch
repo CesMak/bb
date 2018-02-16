@@ -3,7 +3,7 @@
    <!-- use additional tools: -->
    <arg name="start_rviz" default="False"/>
    <arg name="start_rqt_multiplot" default="False"/>
-   <arg name="start_plotjuggler" default="False"/>
+   <arg name="start_plotjuggler" default="True"/>
    <arg name="start_rqt_gui" default="False"/>
 
    <!-- choose sensors to be used: -->
@@ -36,6 +36,7 @@
 
 
    <!-- start Gazebo -->
+   <!-- rosservice call unpause gazebo: rosservice call gazebo/unpause_physics -->
    <include file="$(find gazebo_ros)/launch/empty_world.launch">
       <arg name="world_name" value="$(find ballbot_gazebo)/worlds/empty.world" />
       <arg name="paused" value="True" />

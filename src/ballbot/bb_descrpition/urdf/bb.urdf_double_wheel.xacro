@@ -33,7 +33,7 @@
    <!-- dynamixel: XM430-W350-T: see performance graph the effort depends on current, efficiency(E), torque : -->
    <!-- http://simplemotor.com/calculations/ τ = (I * V * E *60) / (rpm * 2π) -->
    <xacro:property name="XM430_W350_R_max_effort" value="3.8" />    <!-- acc. to datasheet should be 3.8Nm at 11.1V-->
-   <xacro:property name="XM430_W350_R_max_velocity" value="4.2" />  <!-- CAUTION set this param higher than 4 that the sim. works! for control mode max vel of this motors not specified! we measured: v_max=2 rad/sec;  -->
+   <xacro:property name="XM430_W350_R_max_velocity" value="4.5" />  <!-- CAUTION set this param higher than 4 that the sim. works! for control mode max vel of this motors not specified! we measured: v_max=2 rad/sec;  -->
 
    <!-- trägheit des motors: if these values are higher than the torques wheel does not turn, if this value is not small enough gazebo error-->
    <!-- damping: is the damping force which is proportional to the velocity of the moving body [Nm*s/rad] -->

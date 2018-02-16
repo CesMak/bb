@@ -81,7 +81,7 @@
    <child link="wheel${pos}_link" />
    <xacro:insert_block name="joint_origin" />
    <axis xyz="1 0 0" />
-   <limit effort="${XL430_W250_max_effort}" velocity="${XL430_W250_max_effort}" />
+   <limit effort="${XL430_W250_max_effort}" velocity="${XL430_W250_max_velocity}" />
    <dynamics friction="${wheel_joint_friction}" damping="${wheel_joint_damping}" />
 </joint>
 
