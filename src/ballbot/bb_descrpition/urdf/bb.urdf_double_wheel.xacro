@@ -89,27 +89,17 @@
             <limit effort="${XM430_W350_R_max_effort}" velocity="${XM430_W350_R_max_velocity}" />
             <dynamics friction="${wheel_joint_friction}" damping="${wheel_joint_damping}" />
          </joint>
+
          <link name="wheel${pos}_link">
             <visual>
-               <origin xyz="0 0 0" rpy="0 0 0" />
                <geometry>
-                  <mesh filename="package://ballbot_description/meshes/wheels/Wheel2_Double_ohneRaeder.stl" scale="0.001 0.001 0.001" />
+                  <mesh filename="package://ballbot_description/wheel.stl" scale="0.001 0.001 0.001" />
                </geometry>
-               <cast_shadows>1</cast_shadows>
-               <transparency>0</transparency>
-               <material name="light_black" />
             </visual>
             <inertial>
-               <origin xyz="0.0 0.0 0.0" />
                <mass value="${mass_wheel}" />
-               <inertia ixx="${d_inertia_wheel_xx}" ixy="0.0" ixz="0.0" iyy="${d_inertia_wheel_yy_zz}" iyz="0.0" izz="${d_inertia_wheel_yy_zz}" />
+               <inertia ixx="2.75e-5" ixy="0.0" ixz="0.0" iyy="1.718e-5" iyz="0.0" izz="1.718e-5" />
             </inertial>
-            <collision>
-               <origin xyz="0 0 0" rpy="0 0 0" />
-               <geometry>
-                  <mesh filename="package://ballbot_description/meshes/wheels/Wheel2_Double_ohneRaeder.stl" scale="0.001 0.001 0.001" />
-               </geometry>
-            </collision>
          </link>
       </xacro:macro>
 

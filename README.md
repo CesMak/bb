@@ -10,6 +10,8 @@ Please see the [Problems Area](https://github.com/CesMak/bb/wiki/Simulation#Prob
 * Gazebo 7
 * ROS - Kinetic
 * Ubuntu 16.04 LTS
+* `ros-kinetic-gazebo-ros`
+* `ros-kinetic-gazebo-ros-control`
 
 I only tested the simulation with Gazebo 7 and ROS - Kinetic.
 
