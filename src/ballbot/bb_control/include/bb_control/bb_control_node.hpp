@@ -48,7 +48,7 @@
 #include <std_msgs/Float64.h>
 #include <geometry_msgs/PointStamped.h>
 
-#include <Eigen/Dense>  /* for matrix multiplication */
+#include <eigen3/Eigen/Dense>  /* for matrix multiplication */
 #include <math.h>       /* sin, sqrt */
 
 //#include <std_msgs/String.h>
