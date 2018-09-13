@@ -16,21 +16,11 @@ find_package(catkin REQUIRED COMPONENTS
   controller_manager
 )
 
-#find_package (Eigen3 REQUIRED NO_MODULE)
-
-## Find Eigen
-find_package(Eigen3)
-if(NOT EIGEN3_FOUND)
-  # Fallback to cmake_modules
-  find_package(cmake_modules REQUIRED)
-  find_package(Eigen REQUIRED)
-  set(EIGEN3_INCLUDE_DIRS ${EIGEN_INCLUDE_DIRS})
-  set(EIGEN3_LIBRARIES ${EIGEN_LIBRARIES})
-endif()
+find_package (Eigen3 REQUIRED NO_MODULE)
 
 ## System dependencies are found with CMake's conventions
-find_package(Boost REQUIRED COMPONENTS system)
-find_package(catkin REQUIRED COMPONENTS ${PACKAGE_DEPENDENCIES})
+# find_package(Boost REQUIRED COMPONENTS system)
+
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -125,8 +115,7 @@ find_package(catkin REQUIRED COMPONENTS ${PACKAGE_DEPENDENCIES})
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS std_msgs roscpp
-  DEPENDS Boost EIGEN3
+  CATKIN_DEPENDS std_msgs
 )
 ###########
 ## Build ##
@@ -135,9 +124,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-    include 
-      ${catkin_INCLUDE_DIRS}
-      ${EIGEN3_INCLUDE_DIRS}
+    include ${catkin_INCLUDE_DIRS}
 )
 
 ## Specify additional locations of header files
@@ -166,16 +153,8 @@ add_executable(bb_control_node ${SOURCES})
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-#target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} Eigen3::Eigen)
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} Eigen3::Eigen)
 target_link_libraries(bb_control_node ${PROJECT_NAME})
-target_link_libraries(bb_control_node ${catkin_LIBRARIES} ${Eigen3_LIBRARIES})
-target_link_libraries(bb_control_node ${catkin_LIBRARIES})
-
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${Eigen3_LIBRARIES})
-
-target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC
-  "${EIGEN3_INCLUDE_DIR}")
-target_link_libraries(${PROJECT_NAME} PUBLIC ${EIGEN3_LIBRARIES})
 
 #############
 ## Install ##
@@ -209,8 +188,6 @@ install(DIRECTORY config
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   PATTERN "*~" EXCLUDE
 )
-
-#install ( EXPORT Eigen3Targets FILE Eigen3Targets.cmake NAMESPACE Eigen3:: DESTINATION ${CMAKEPACKAGE_INSTALL_DIR} )
 
 #############
 ## Testing ##

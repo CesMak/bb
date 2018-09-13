@@ -39,7 +39,8 @@
 #define BB_CONTROL2D_H__
 
 #include <math.h>       /* sin */
-#include <Eigen/Dense>  /* for matrix multiplication */
+// #include <Eigen/Dense>  /* for matrix multiplication */
+#include <eigen3/Eigen/Dense>
 #include <ctime>
 
 
